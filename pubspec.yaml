@@ -87,7 +87,7 @@ flutter:
      - assets/images/logo.jpg
      - assets/images/buttercup.JPG
      - assets/model/model.tflite
-     - assets/model/model_latest.tflite
+     - assets/model/model_latest1.tflite
      - assets/model/model_final.tflite
      - assets/images/trivia/buttercup.jpg
      - assets/images/trivia/clematis.jpg
