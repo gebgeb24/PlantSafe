@@ -170,7 +170,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
 
   Future<void> _loadModel() async {
     try {
-      _interpreter = await Interpreter.fromAsset('assets/model/model_latest1.tflite');
+      _interpreter = await Interpreter.fromAsset('assets/model/model.tflite');
       print('Model loaded successfully!');
     } catch (e) {
       print('Error loading model: $e');

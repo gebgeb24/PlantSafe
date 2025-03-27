@@ -20,7 +20,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       'scientificName': 'Ranunculus bulbosus',
       'tagalogName': 'Dilaw-dilawan',
       'description1': "Ranunculus bulbosus, commonly known as bulbous buttercup or St. Anthony's turnip, is a perennial flowering plant in the buttercup family Ranunculaceae. It has bright yellow flowers, and deeply divided, three-lobed long-petioled basal leaves.",
-      'description2': 'Flower commonly yellow, thimblelike, often shiny. Cultivars in many other colors. Blooms around mid-spring and summer',
+      'description2': 'Flower commonly yellow, thimble like, often shiny. Cultivars in many other colors. Blooms around mid-spring and summer',
       'toxicityIndex': 'Minor & Dermatitis',
       'toxicityDescription': 'The juice, sap, or thorns of these plants may cause skin irritation, rashes, or mild illnesses such as vomiting or diarrhea.',
       'location': [
