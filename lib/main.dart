@@ -395,156 +395,154 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   void _showTriviaPopup() {
-    // Select a random trivia from the list
     final random = Random();
     final trivia = triviaList[random.nextInt(triviaList.length)];
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Stack(
-          children: [
-            AlertDialog(
-              backgroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              elevation: 10,
-              // Add shadow to the trivia box
-              contentPadding: EdgeInsets.zero,
-              // Remove default padding
-              content: Container(
-                width: 400,
-                // Set a fixed width for the popup
-                padding: const EdgeInsets.all(16),
-                // Padding around content inside popup
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // "Did you know?" box
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        // Set border radius to 5px
-                        color: Color(
-                            0xFF4FAE50), // Background color set to #4fae50
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      width: MediaQuery.of(context).size.width *
-                          0.95, // Set width to 95%
-                      child: const Center(
-                        // Center the text
-                        child: Text(
-                          'Did you know?',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold, // Bolder font
-                            color: Colors.white, // Text color
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10), // Add some spacing
-                    // Trivia image
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: const Color(0xFF00481c),
-                            width: 3), // Border color and width
-                        borderRadius:
-                            BorderRadius.circular(5), // Rounded corners
-                      ),
-                      width: MediaQuery.of(context).size.width *
-                          0.95, // Set width to 95%
-                      height: 300, // Set image height
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(2.5),
-                        child: Image.asset(
-                          trivia.imageUrl,
-                          fit: BoxFit.cover, // Fit the image within the box
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10), // Add some spacing
-                    // Title box
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: const Color(0xFF00481c),
-                            width: 3), // Border color and width
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.white, // Background color
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      width: MediaQuery.of(context).size.width *
-                          0.95, // Set width to 95%
-                      child: Center(
-                        // Center the text
-                        child: Text(
-                          trivia.title,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold, // Bolder font
-                            color: Color(0xFF00481c), // Text color set to white
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10), // Add some spacing
-
-                    // Description box
-                    Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: const Color(0xFF00481c), width: 3),
-                        // Border color and width
-                        borderRadius: BorderRadius.circular(5),
-                        // Rounded corners
-                        color: Color(
-                            0xFFDCDCDC), // Background color changed to #dcdcdc
-                      ),
-                      padding: const EdgeInsets.all(8),
-                      width: MediaQuery.of(context).size.width *
-                          0.95, // Set width to 95%
-                      child: Text(
-                        trivia.description,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black, // Text color
-                        ),
-                        textAlign: TextAlign.justify, // Justify text
-                      ),
-                    ),
-                  ],
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 12,
+                  offset: Offset(0, 6),
                 ),
-              ),
+              ],
             ),
-            // Circular Close Button exactly on the top right edge of the AlertDialog box
-            Positioned(
-              top: 60,
-              // Move upwards to overlap slightly on the AlertDialog's top edge
-              right: 20,
-              // Move leftwards to overlap slightly on the right edge
-              child: CircleAvatar(
-                backgroundColor: Colors.grey, // Red background for the button
-                radius: 20, // Circle size
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.close,
-                    color: Colors.white, // White X icon
+            child: SingleChildScrollView( // Make the entire dialog scrollable
+              child: Column(
+                mainAxisSize: MainAxisSize.min, // Ensure it shrinks to fit content
+                children: [
+                  // Title Box - Green box
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4FAE50),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    width: double.infinity, // Make the width match the image
+                    child: const Text(
+                      'Did you know?',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                ),
+                  const SizedBox(height: 10), // Spacing between title and image
+                  // Trivia Image
+                  GestureDetector(
+                    onTap: () {
+                      _showFullScreenImage(context, trivia.imageUrl);
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        trivia.imageUrl,
+                        width: double.infinity, // Image will take up available width
+                        height: 400, // Set height to prevent large gaps
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10), // Spacing between image and title
+                  // Trivia Title Box
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: const Color(0xFF00481c), width: 2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        trivia.title,
+                        style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF00481c),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10), // Spacing between title and description
+                  // Trivia Description Box
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7F7F7),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFF00481c), width: 2),
+                    ),
+                    child: Text(
+                      trivia.description,
+                      style: const TextStyle(fontSize: 18, color: Colors.black),
+                      textAlign: TextAlign.justify,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         );
       },
     );
   }
+
+// Function to show full-screen zoomable image
+  void _showFullScreenImage(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.black,
+          insetPadding: EdgeInsets.zero,
+          child: Stack(
+            children: [
+              // Zoomable Image
+              InteractiveViewer(
+                minScale: 1.0,
+                maxScale: 5.0,
+                child: Center(
+                  child: Image.asset(imageUrl, fit: BoxFit.contain),
+                ),
+              ),
+              // Close Button
+              Positioned(
+                top: 40,
+                right: 20,
+                child: CircleAvatar(
+                  backgroundColor: Colors.grey,
+                  radius: 20,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+
+
+
+
+
+
 
   void showInstructionDialog(BuildContext context) {
     showDialog(

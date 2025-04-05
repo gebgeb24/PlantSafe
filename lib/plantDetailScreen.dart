@@ -23,27 +23,51 @@ class plantDetailScreen extends StatefulWidget {
 class FullScreenImagePage extends StatelessWidget {
   final String imageUrl;
 
-  FullScreenImagePage({required this.imageUrl});
+  const FullScreenImagePage({Key? key, required this.imageUrl}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Center(
-        child: GestureDetector(
-          onTap: () {
-            Navigator.pop(context); // Close the full-screen view when tapped
-          },
-          child: Hero(
-            tag: imageUrl,
-            child: Image.asset(
-              imageUrl,
-              fit: BoxFit.contain,
-              width: double.infinity,
-              height: double.infinity,
+      body: Stack(
+        children: [
+          // Zoomable and Pannable Image
+          Center(
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pop(context); // Close when tapped
+              },
+              child: Hero(
+                tag: imageUrl,
+                child: InteractiveViewer(
+                  minScale: 1.0, // Default scale
+                  maxScale: 5.0, // Allows zooming up to 5x
+                  child: Image.asset(
+                    imageUrl,
+                    fit: BoxFit.contain,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
+          // Close Button (Top Right)
+          Positioned(
+            top: 40,
+            right: 20,
+            child: CircleAvatar(
+              backgroundColor: Colors.grey.withOpacity(0.7),
+              radius: 20,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

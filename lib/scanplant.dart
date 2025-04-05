@@ -6,6 +6,10 @@ import 'package:image/image.dart' as img;
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'dart:typed_data';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/services.dart';
+
 
 import 'first_aid.dart';
 
@@ -52,7 +56,6 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Ranunculus",
       "species": "bulbosus",
       "family": "Ranunculaceae",
-
     },
     "Clematis": {
       "scientificName": "Clematis recta",
@@ -148,13 +151,22 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "scientificName": "Invalid",
       "tagalogName": "Invalid",
       "toxicityIndex": "Invalid",
-      "plantDescription": "This may be due to one or more of the following reasons:\\n- The plant is toxic but not an irritant type.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
-      "toxicityDescription": "Invalid",
+      "plantDescription": "This may be due to one or more of the following reasons:\\n- The image is not a plant.\\n- The plant is toxic but not an irritant type.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",      "toxicityDescription": "Invalid",
       "genus": "Invalid",
       "species": "Invalid",
       "family": "Invalid",
     },
   };
+
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  // TTS variables
+  FlutterTts _flutterTts = FlutterTts();
+  bool _isSpeaking = false;
+  bool _isPaused = false;
+  String _speechText = "";
 
   @override
   void initState() {
@@ -166,6 +178,145 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     } else if (widget.gallery) {
       _pickImage(ImageSource.gallery);
     }
+
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+
+    // Initialize TTS handlers
+    _initTts();
+  }
+
+  void _initTts() {
+    _flutterTts.setStartHandler(() {
+      setState(() {
+        _isSpeaking = true;
+        _isPaused = false;
+      });
+    });
+
+    _flutterTts.setCompletionHandler(() {
+      setState(() {
+        _isSpeaking = false;
+        _isPaused = false;
+      });
+    });
+
+    _flutterTts.setCancelHandler(() {
+      setState(() {
+        _isSpeaking = false;
+        _isPaused = false;
+      });
+    });
+
+    _flutterTts.setErrorHandler((msg) {
+      setState(() {
+        _isSpeaking = false;
+        _isPaused = false;
+      });
+    });
+  }
+
+  Future<void> _speak() async {
+    if (_result.contains('Invalid')) {
+      await _flutterTts.speak(
+          "The image is invalid. This may be due to one or more of the following reasons: The image is not a plant. The photo has low visibility or insufficient light. The picture is not clear or is improperly taken."
+      );
+      return;
+    }
+
+    else if (_result.contains('Bulbous buttercup')) {
+      await _flutterTts.speak(
+          "The plant is classified as non-irritant. This may be due to the plant being toxic but not an irritant, or it may not be toxic in nature."
+      );
+      return;
+    }
+
+
+    if (_isSpeaking) {
+      await _pause();
+    } else if (_isPaused) {
+      await _resume();
+    } else {
+      await _prepareSpeechText();
+      await _flutterTts.speak(_speechText);
+    }
+  }
+
+  Future<void> _prepareSpeechText() async {
+    if (_result.isEmpty) return;
+
+    List<String> resultLines = _result.split('\n');
+    String plantName = resultLines[0].replaceFirst('Predicted class: ', '').trim();
+    String accuracy = resultLines[1].replaceFirst('Accuracy: ', '').replaceAll('%', '').trim();
+    String scientificName = resultLines[2].trim();
+    String tagalogName = resultLines[3].trim();
+    String genus = resultLines[4].trim();
+    String species = resultLines[5].trim();
+    String family = resultLines[6].trim();
+    String toxicityIndex = resultLines[7].trim();
+    String plantDescription = resultLines[8].trim();
+    String toxicityDescription = resultLines.sublist(9).join(' ').trim();
+
+    _speechText = """
+    The plant is identified as $plantName with an accuracy of $accuracy percent. 
+    Its toxicity index is $toxicityIndex. $toxicityDescription. 
+    $plantName, scientifically known as $scientificName. 
+    In the Philippines, it is referred to as $tagalogName. 
+    This plant belongs to the $genus genus and its species name is $species. 
+    It is part of the $family family. $plantName, $plantDescription
+    """;
+  }
+
+  Future<void> _pause() async {
+    var result = await _flutterTts.pause();
+    if (result == 1) {
+      setState(() {
+        _isSpeaking = false;
+        _isPaused = true;
+      });
+    }
+  }
+
+  Future<void> _resume() async {
+    var result = await _flutterTts.speak(_speechText);
+    if (result == 1) {
+      setState(() {
+        _isSpeaking = true;
+        _isPaused = false;
+      });
+    }
+  }
+
+  Future<void> _stop() async {
+    await _flutterTts.stop();
+    setState(() {
+      _isSpeaking = false;
+      _isPaused = false;
+    });
+  }
+
+  Future<void> _startFromBeginning() async {
+    await _stop();
+    await _prepareSpeechText();
+    await _speak();
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    _flutterTts.stop();
+    super.dispose();
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+  }
+
+  bool get _isConnected {
+    return _connectionStatus.contains(ConnectivityResult.wifi) ||
+        _connectionStatus.contains(ConnectivityResult.mobile);
   }
 
   Future<void> _loadModel() async {
@@ -259,7 +410,6 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
         ),
       );
 
-      // Define the output tensor for 13 classes (adjusted based on model).
       var output = List.filled(1 * 11, 0.0).reshape([1, 11]);
 
       if (_interpreter != null) {
@@ -275,27 +425,24 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
 
         String predictedClassName = classNames[predictedClassIndex];
 
-        // Check for "Invalid" class
         var details = predictedClassName != "Invalid"
             ? plantDetails[predictedClassName]
             : {
           "scientificName": "Invalid",
           "tagalogName": "Invalid",
           "toxicityIndex": "Invalid",
-          "plantDescription": "This may be due to one or more of the following reasons:\\n- The image is not a plant.\\n- The plant is toxic but not an irritant type.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
+          "plantDescription": "This may be due to one or more of the following reasons:\\n- The image is not a plant.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
           "toxicityDescription": "Invalid",
           "genus": "Invalid",
           "species": "Invalid",
           "family": "Invalid",
         };
 
-        // Display the Accuracy in the console
         print('Accuracy: ${confidenceScore * 100}%');
         print('Predicted Class: $predictedClassName');
         print('classNames length: ${classNames.length}');
         print('predictedClassIndex: $predictedClassIndex');
 
-        // Prepare the text for display
         _result = 'Predicted class: $predictedClassName\n';
 
         String scientificName = '';
@@ -314,8 +461,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
             '${details?["family"]}\n'
             '${details?["toxicityIndex"]}\n'
             '${details?["plantDescription"]}\n'
-            '${details?["toxicityDescription"]}\n'
-        ;
+            '${details?["toxicityDescription"]}\n';
         _isLoading = false;
       });
 
@@ -328,15 +474,11 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     }
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
-    // Get the screen width
     final screenWidth = MediaQuery.of(context).size.width;
-    // Calculate the width for the boxes, reducing by a small margin (5%)
     final boxWidth = screenWidth * 0.90;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -351,66 +493,61 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context); // Go back to Dashboard
+            Navigator.pop(context);
           },
         ),
         centerTitle: true,
       ),
 
-        body: Container(
-          color: const Color(0xFFE9FFC8),
-          child: Center(
-            child: _isLoading
-                ? const CircularProgressIndicator()
-                : _result.isEmpty // Check if the result is empty
-                ? const CircularProgressIndicator() // Show loading indicator
-
-
-        : SingleChildScrollView(
+      body: Container(
+        color: const Color(0xFFE9FFC8),
+        child: Center(
+          child: _isLoading
+              ? const CircularProgressIndicator()
+              : _result.isEmpty
+              ? const CircularProgressIndicator()
+              : SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Image display
                 if (_imagePath != null) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 5.0),
                     child: SizedBox(
-                      width: boxWidth, // Set width to match the calculated box width
-                      height: 400, // Set a fixed height for the image
+                      width: boxWidth,
+                      height: 400,
                       child: Image.file(
                         File(_imagePath!),
-                        fit: BoxFit.cover, // Use BoxFit to fill the space appropriately
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
                   const SizedBox(height: 5),
                 ],
 
-                // Display only the predicted class value
-                if (!_result.contains('Invalid')) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Bulbous buttercup")) ...[
                   Text(
                     _result.split('\n').isNotEmpty &&
                         _result.split('\n')[0].length > 15
                         ? _result
                         .split('\n')[0]
                         .substring(_result.split('\n')[0].indexOf(':') + 1)
-                        .trim() // Extract predicted class
+                        .trim()
                         : '',
-                    textAlign: TextAlign.center, // Center the text
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 30,
                       color: Colors.black87,
                     ),
                   ),
-                  // Display the accuracy under the predicted class value
                   Text(
                     _result.split('\n').length > 1
-                        ? _result.split('\n')[1] // Accuracy
+                        ? _result.split('\n')[1]
                         : '',
-                    textAlign: TextAlign.center, // Center the text
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 18,
                       color: Colors.black54,
@@ -418,24 +555,25 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   ),
                 ],
                 const SizedBox(height: 10),
-                // Box with dynamic text (either "TOXIC" or "Invalid") and color change based on result
                 Container(
                   width: boxWidth,
                   decoration: BoxDecoration(
-                    color: _result.contains('Invalid')
+                    color: _result.contains('Invalid') || _result.contains("Bulbous buttercup")
                         ? const Color(0xFF363636)
-                        : Colors.red, // Keep red color for "TOXIC"
+                        : Colors.red,
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(
-                      color: _result.contains('Invalid')
+                      color: _result.contains('Invalid') || _result.contains("Bulbous buttercup")
                           ? const Color(0xFF000000)
                           : const Color(0xFF980000),
-                      width: 3, // Set border width
+                      width: 3,
                     ),
                   ),
-                  padding: const EdgeInsets.all(10.0), // Padding inside the box
+                  padding: const EdgeInsets.all(10.0),
                   child: Text(
-                    _result.contains('Invalid') ? 'INVALID' : 'TOXIC', // Change text based on result
+                    _result.contains('Invalid') ? 'INVALID' :
+                    _result.contains("Bulbous buttercup") ? 'NON-IRRITANT' :
+                    'TOXIC',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -445,10 +583,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 10), // Space between "TOXIC" box and toxicity index
+                const SizedBox(height: 10),
 
-                // Container for Toxicity Index
-                if (!_result.contains('Invalid')) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Bulbous buttercup")) ...[
                   Container(
                     width: boxWidth,
                     decoration: BoxDecoration(
@@ -461,7 +598,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Text(
-                          'Toxicity Index:', // Label for the index
+                          'Toxicity Index:',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -469,7 +606,6 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 5),
-                        // Nested Container for Toxicity Index Value
                         Container(
                           width: boxWidth,
                           decoration: BoxDecoration(
@@ -482,7 +618,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             child: Text(
                               _result.split('\n').length > 1
                                   ? _result.split('\n')[7].trim()
-                                  : '', // Provide an empty string if there's no value
+                                  : '',
                               style: const TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,
@@ -491,45 +627,40 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        // Toxicity description
                         Container(
-                          alignment: Alignment.center, // Align the text to the left
+                          alignment: Alignment.center,
                           child: RichText(
                             text: TextSpan(
                               children: _result.split('\n').length > 2
                                   ? _result.split('\n').sublist(8).expand<InlineSpan>((line) {
                                 if (line.isNotEmpty) {
-                                  // Split each line into label and description
                                   List<String> parts = line.split(':');
                                   if (parts.length > 1) {
                                     return [
-                                      // Bold label
                                       TextSpan(
-                                        text: parts[0] + ': ', // Label followed by a colon
+                                        text: parts[0] + ': ',
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 20,
                                           height: 1.5,
-                                          color: Colors.black87, // Black text color for the label
+                                          color: Colors.black87,
                                         ),
                                       ),
-                                      // Regular description text
                                       TextSpan(
-                                        text: parts[1].trim(), // Description text
+                                        text: parts[1].trim(),
                                         style: const TextStyle(
                                           fontSize: 20,
-                                          color: Colors.black87, // Black text color for the description
+                                          color: Colors.black87,
                                         ),
                                       ),
-                                      const TextSpan(text: '\n'), // Add newline after each line
+                                      const TextSpan(text: '\n'),
                                     ];
                                   }
                                 }
-                                return []; // Return an empty list if the line is empty
-                              }).toList() // Convert the expanded Iterable to a list
+                                return [];
+                              }).toList()
                                   : [],
                               style: const TextStyle(
-                                // Optional: Set a default style for the text
                                 fontSize: 20,
                                 color: Colors.black87,
                               ),
@@ -539,51 +670,74 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                       ],
                     ),
                   ),
-                ], // If not Invalid
-                const SizedBox(height: 10), // Space between toxicity index and the new info box
-                // Container for additional plant information
+                ],
+                const SizedBox(height: 10),
                 Container(
-                  width: boxWidth, // Set width to align with the other boxes
+                  width: boxWidth,
                   decoration: BoxDecoration(
-                    color: Colors.white, // Background color for the info box
-                    borderRadius: BorderRadius.circular(5), // Rounded corners
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5),
                     border: Border.all(color: const Color(0xFF4FAE50), width: 3),
                   ),
-                  padding: const EdgeInsets.all(16.0), // Padding inside the box
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Display "The plant could not be identified" if result is "Invalid"
                       Text(
                         _result.contains('Invalid')
-                            ? 'The image is Invalid.'
+                            ? 'The image is invalid.'
+                            : _result.contains("Bulbous buttercup")
+                            ? 'The image is non-irritant.'
                             : _result.split('\n').isNotEmpty &&
                             _result.split('\n')[0].length > 15
-                            ? _result.split('\n')[0].substring(
-                            _result.split('\n')[0].indexOf(':') + 1)
-                            .trim() // Extract predicted class
+                            ? _result
+                            .split('\n')[0]
+                            .substring(_result.split('\n')[0].indexOf(':') + 1)
+                            .trim()
                             : '',
-                        textAlign: TextAlign.center, // Center the text
+                        textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 24, // Increased font size for visibility
+                          fontSize: 24,
                           color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 10), // Space between predicted class and scientific name
 
-                      // Only display scientific name if result is not Invalid
-                      if (!_result.contains('Invalid'))
+                      const SizedBox(height: 10),
+
+                      // For Elephant's Ear, only show the description like Invalid
+                      // Show only description if result is Invalid or Elephant's Ear
+                      if (_result.contains('Invalid') || _result.contains("Bulbous buttercup")) ...[
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE2E2E2),
+                            border: Border.all(color: const Color(0xFF4FAE50), width: 3),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            _result.split('\n').length > 8
+                                ? _result.split('\n')[8].trim().replaceAll('\\n', '\n')
+                                : '',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ]
+// Show full scientific info if result is valid and not Elephant's Ear
+                      else if (!_result.contains('Invalid') && !_result.contains("Bulbous buttercup")) ...[
                         RichText(
                           text: TextSpan(
                             style: const TextStyle(fontSize: 20, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Scientific Name: ',
-                                style: TextStyle(fontWeight: FontWeight.bold), // Bold label
-                              ),// Normal text
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                               TextSpan(
-                                text: _result.split('\n').length > 1 ? _result.split('\n')[2].trim() : '',
+                                text: _result.split('\n').length > 2 ? _result.split('\n')[2].trim() : '',
                                 style: const TextStyle(fontStyle: FontStyle.italic),
                               ),
                             ],
@@ -591,144 +745,128 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                         ),
 
 
-                      // Only display Tagalog name if result is not Invalid
-                      if (!_result.contains('Invalid'))
-                        RichText(
+                      RichText(
                           text: TextSpan(
                             style: const TextStyle(fontSize: 20, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Tagalog Name: ',
-                                style: TextStyle(fontWeight: FontWeight.bold), // Bold label
-                              ), // Normal text
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                               TextSpan(
                                 text: _result.split('\n').length > 5 ? _result.split('\n')[3].trim() : '',
                               ),
                             ],
                           ),
                         ),
-
-                      // Only display genus if result is not Invalid
-                      if (!_result.contains('Invalid'))
                         RichText(
                           text: TextSpan(
                             style: const TextStyle(fontSize: 20, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Genus: ',
-                                style: TextStyle(fontWeight: FontWeight.bold), // Bold label
-                              ), // Normal text
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                               TextSpan(
                                 text: _result.split('\n').length > 4 ? _result.split('\n')[4].trim() : '',
-                                style: const TextStyle(fontStyle: FontStyle.italic), // Italicized genus name
+                                style: const TextStyle(fontStyle: FontStyle.italic),
                               ),
                             ],
                           ),
                         ),
-
-
-                      // Only display Species if result is not Invalid
-                      if (!_result.contains('Invalid'))
                         RichText(
                           text: TextSpan(
                             style: const TextStyle(fontSize: 20, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Species: ',
-                                style: TextStyle(fontWeight: FontWeight.bold), // Bold label
-                              ), // Normal text
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                               TextSpan(
                                 text: _result.split('\n').length > 5 ? _result.split('\n')[5].trim() : '',
-                                style: const TextStyle(fontStyle: FontStyle.italic), // Italicized italic name
+                                style: const TextStyle(fontStyle: FontStyle.italic),
                               ),
                             ],
                           ),
                         ),
-
-
-                      if (!_result.contains('Invalid'))
                         RichText(
                           text: TextSpan(
                             style: const TextStyle(fontSize: 20, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Family: ',
-                                style: TextStyle(fontWeight: FontWeight.bold), // Bold label
-                              ), // Normal text
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                               TextSpan(
                                 text: _result.split('\n').length > 5 ? _result.split('\n')[6].trim() : '',
                               ),
                             ],
                           ),
                         ),
-
-                      const SizedBox(height: 10), // Space between Tagalog name and description
-
-                      // Display description only if result is not Invalid
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE2E2E2),
-                          border: Border.all(color: const Color(0xFF4FAE50), width: 3),
-                          borderRadius: BorderRadius.circular(10), // Border radius
-                        ),
-                        padding: const EdgeInsets.all(10.0), // Padding inside the box
-                        child: Text(
-                          _result.isEmpty
-                              ? ''
-                              : _result.split('\n').length > 1
-                              ? _result.split('\n')[8].trim().replaceAll('\\n', '\n') // Replace \\n with actual newlines
-                              : '', // Provide an empty string if there's no value
-                          style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.black, // Text color for the description
+                        const SizedBox(height: 10),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE2E2E2),
+                            border: Border.all(color: const Color(0xFF4FAE50), width: 3),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            _result.isEmpty
+                                ? ''
+                                : _result.split('\n').length > 1
+                                ? _result.split('\n')[8].trim().replaceAll('\\n', '\n') // Replace \\n with actual newlines
+                                : '', // Provide an empty string if there's no value
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.black, // Text color for the description
+                            ),
                           ),
                         ),
-                      ),
-
+                      ],
                     ],
                   ),
                 ),
 
-                if (!_result.contains('Invalid')) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Bulbous buttercup")) ...[
                   Padding(
-                    padding: const EdgeInsets.only(top: 10.0), // Adds padding of 10 on top
+                    padding: const EdgeInsets.only(top: 10.0),
                     child: ElevatedButton(
                       onPressed: () {
+                        _flutterTts.stop();
                         String predictedClass = _result.isEmpty
                             ? ''
                             : _result.split('\n').isNotEmpty && _result.split('\n')[0].length > 15
                             ? _result.split('\n')[0].substring(
                           _result.split('\n')[0].indexOf(':') + 1,
-                        ).trim() // Extract predicted class
+                        ).trim()
                             : '';
-                        // Extract toxicityIndex from _result, assuming it's on a specific line (e.g., line 3)
                         String toxicityIndex = _result.split('\n').length > 3
-                            ? _result.split('\n')[7].trim() // Adjust line number as needed
+                            ? _result.split('\n')[7].trim()
                             : '';
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => FirstAid(predictedClass: predictedClass, toxicityIndex: toxicityIndex,),
-                     // Pass the predicted class
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4fae53), // Button color
-                        minimumSize: Size(boxWidth, 60), // Set width to boxWidth and height to 60
+                        backgroundColor: const Color(0xFF4fae53),
+                        minimumSize: Size(boxWidth, 60),
                         padding: const EdgeInsets.symmetric(
                           vertical: 16.0,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0), // Rounded corners
+                          borderRadius: BorderRadius.circular(10.0),
                           side: const BorderSide(
                             color: Color(0xFF08411c),
-                            width: 5, // Border color and width
+                            width: 5,
                           ),
                         ),
                       ),
                       child: const Text(
-                        'First Aid Guide', // Button label
+                        'First Aid Guide',
                         style: TextStyle(
                           color: Color(0xFF08411c),
                           fontWeight: FontWeight.bold,
@@ -737,22 +875,28 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                       ),
                     ),
                   ),
-                ], // If not Invalid
-
+                ],
               ],
             ),
           ),
         ),
       ),
+      floatingActionButton: GestureDetector(
+        onLongPress: () async {
+          await _startFromBeginning();
+        },
+        child: FloatingActionButton(
+          onPressed: _speak,
+          backgroundColor: const Color(0xFF4FAE50),
+          child: Icon(
+            _isSpeaking
+                ? Icons.pause
+                : (_isPaused ? Icons.play_arrow : Icons.volume_up),
+            color: Colors.white,
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-
-
-
-
-
-
-
-
-
 }

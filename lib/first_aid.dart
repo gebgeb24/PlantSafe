@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
-class FirstAid extends StatelessWidget {
+class FirstAid extends StatefulWidget {
   final String predictedClass;
   final String toxicityIndex;
 
@@ -12,6 +16,11 @@ class FirstAid extends StatelessWidget {
     required this.toxicityIndex,
   });
 
+  @override
+  State<FirstAid> createState() => _FirstAidState();
+}
+
+class _FirstAidState extends State<FirstAid> {
   // Define an array of toxicity information
   static const List<Map<String, dynamic>> toxicityInfo = [
     {
@@ -60,8 +69,70 @@ class FirstAid extends StatelessWidget {
     },
   ];
 
+  // TTS variables
+  final FlutterTts _flutterTts = FlutterTts();
+  bool _isSpeaking = false;
+  bool _isPaused = false;
+  String _speechText = "";
+
+  // Connectivity variables
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _initTts();
+    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    _flutterTts.stop();
+    super.dispose();
+  }
+
+  void _initTts() {
+    _flutterTts.setStartHandler(() {
+      setState(() {
+        _isSpeaking = true;
+        _isPaused = false;
+      });
+    });
+
+    _flutterTts.setCompletionHandler(() {
+      setState(() {
+        _isSpeaking = false;
+        _isPaused = false;
+      });
+    });
+
+    _flutterTts.setCancelHandler(() {
+      setState(() {
+        _isSpeaking = false;
+        _isPaused = false;
+      });
+    });
+
+    _flutterTts.setErrorHandler((msg) {
+      setState(() {
+        _isSpeaking = false;
+        _isPaused = false;
+      });
+    });
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+  }
+
   // Method to launch the dialer with the specified number
   Future<void> _callEmergency() async {
+    _flutterTts.stop();
     var status = await Permission.phone.status;
 
     if (!status.isGranted) {
@@ -80,28 +151,100 @@ class FirstAid extends StatelessWidget {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Future<void> _speak() async {
+    if (_isSpeaking) {
+      await _pause();
+    } else if (_isPaused) {
+      await _resume();
+    } else {
+      await _prepareSpeechText();
+      await _flutterTts.speak(_speechText);
+    }
+  }
+
+  Future<void> _prepareSpeechText() async {
     // Split toxicityIndex into words (toxicity levels)
-    final List<String> toxicityLevels = toxicityIndex.split(RegExp(r'\s+'));
+    final List<String> toxicityLevels = widget.toxicityIndex.split(RegExp(r'\s+'));
 
     // Get details for each matched toxicity level
     final List<Map<String, dynamic>> matchedToxicityDetails = toxicityLevels
         .map((level) {
-      // Find matching toxicity level in toxicityInfo
       return toxicityInfo.firstWhere(
             (info) => info['level'] == level,
-        orElse: () => <String, dynamic>{}, // Return empty map if no match
+        orElse: () => <String, dynamic>{},
       );
     })
-        .where((details) => details.isNotEmpty) // Remove empty maps
+        .where((details) => details.isNotEmpty)
         .toList();
 
-    // Now matchedToxicityDetails contains only valid matched toxicity levels
-    // Your code to display matched details
+    // Build the speech text
+    StringBuffer speechBuffer = StringBuffer();
+    speechBuffer.write("First aid guide for ${widget.predictedClass}. ");
+    speechBuffer.write("Toxicity Index: ${widget.toxicityIndex}. ");
 
+    for (var details in matchedToxicityDetails) {
+      speechBuffer.write("Toxicity Level: ${details['level']}. ");
+      speechBuffer.write("Description: ${details['description']}. ");
+      speechBuffer.write("Symptoms: ${details['symptoms']}. ");
+      speechBuffer.write("First Aid Guide: ");
 
-  return Scaffold(
+      if (details['firstAidGuide'] != null) {
+        for (var i = 0; i < details['firstAidGuide'].length; i++) {
+          speechBuffer.write("Step ${i + 1}: ${details['firstAidGuide'][i]}. ");
+        }
+      }
+    }
+
+    setState(() {
+      _speechText = speechBuffer.toString();
+    });
+  }
+
+  Future<void> _pause() async {
+    var result = await _flutterTts.pause();
+    if (result == 1) {
+      setState(() {
+        _isSpeaking = false;
+        _isPaused = true;
+      });
+    }
+  }
+
+  Future<void> _resume() async {
+    var result = await _flutterTts.speak(_speechText);
+    if (result == 1) {
+      setState(() {
+        _isSpeaking = true;
+        _isPaused = false;
+      });
+    }
+  }
+
+  Future<void> _stop() async {
+    await _flutterTts.stop();
+    setState(() {
+      _isSpeaking = false;
+      _isPaused = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Split toxicityIndex into words (toxicity levels)
+    final List<String> toxicityLevels = widget.toxicityIndex.split(RegExp(r'\s+'));
+
+    // Get details for each matched toxicity level
+    final List<Map<String, dynamic>> matchedToxicityDetails = toxicityLevels
+        .map((level) {
+      return toxicityInfo.firstWhere(
+            (info) => info['level'] == level,
+        orElse: () => <String, dynamic>{},
+      );
+    })
+        .where((details) => details.isNotEmpty)
+        .toList();
+
+    return Scaffold(
       appBar: AppBar(
         title: const Text(
           'First Aid Guide',
@@ -123,7 +266,7 @@ class FirstAid extends StatelessWidget {
         color: const Color(0xFFE9FFC8),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(20.0), // Padding for the body content
+            padding: const EdgeInsets.all(20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -146,12 +289,12 @@ class FirstAid extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.all(12),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-                    crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Center( // Center the first text widget
+                      Center(
                         child: Text(
-                          'First aid guide for: $predictedClass',
+                          'First aid guide for: ${widget.predictedClass}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -161,9 +304,9 @@ class FirstAid extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Center( // Center the second text widget
+                      Center(
                         child: Text(
-                          'Toxicity Index: $toxicityIndex',
+                          'Toxicity Index: ${widget.toxicityIndex}',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -175,7 +318,6 @@ class FirstAid extends StatelessWidget {
                     ],
                   ),
                 ),
-
 
                 const SizedBox(height: 10),
                 // TOXIC section
@@ -265,12 +407,11 @@ class FirstAid extends StatelessWidget {
                             style: const TextStyle(fontSize: 18),
                           ),
 
-                          // Add the Image.asset widget here
                           Image.asset(
-                            details['img'] ?? 'assets/images/firstaidImg/major.JPG', // Ensure the path is correct
-                            width: double.infinity, // Adjust width as needed
-                            height: 200, // Adjust height as needed
-                            fit: BoxFit.contain, // Ensures the image fits well
+                            details['img'] ?? 'assets/images/firstaidImg/major.JPG',
+                            width: double.infinity,
+                            height: 200,
+                            fit: BoxFit.contain,
                           ),
 
                           Container(
@@ -309,7 +450,6 @@ class FirstAid extends StatelessWidget {
                 ],
 
                 // Emergency button at the bottom
-
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -338,10 +478,24 @@ class FirstAid extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: GestureDetector(
+        onLongPress: () async {
+          await _stop();
+          await _prepareSpeechText();
+          await _speak();
+        },
+        child: FloatingActionButton(
+          onPressed: _speak,
+          backgroundColor: const Color(0xFF4FAE50),
+          child: Icon(
+            _isSpeaking
+                ? Icons.pause
+                : (_isPaused ? Icons.play_arrow : Icons.volume_up),
+            color: Colors.white,
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-
-
-
-
 }
