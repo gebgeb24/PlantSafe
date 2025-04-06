@@ -258,38 +258,57 @@ class _LibraryScreenState extends State<LibraryScreen> {
         centerTitle: true,
       ),
       body: Container(
-        color: const Color(0xFFE9FFC8),
-        padding: const EdgeInsets.all(10.0),
+        color: const Color(0xFFe9ffc8), // Light grey background
+        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
-              child: Image.asset(
-                'assets/images/logo.jpg',
-                width: screenWidth * 0.9,
+            // Caution Box (as previously designed)
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFAF393),
+                borderRadius: BorderRadius.circular(10),
+
+                border: Border.all(
+                  color: const Color(0xFFfcbe37), // Darker border for caution effect
+                  width: 3,
+                ),
               ),
-            ),
-            const Text(
-              'Beware of these\nplants',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFe2a52a),
-                shadows: [
-                  Shadow(
-                    offset: Offset(2.0, 2.0),
-                    blurRadius: 3.0,
-                    color: Color(0x80000000),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/images/caution.png',
+                    width: 30,
+                    height: 30,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'Beware of these plants',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFFfcbe37),
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
+
+            // Search Bar
             Container(
               decoration: BoxDecoration(
-                color: const Color(0xFFf1f1f1),
-                borderRadius: BorderRadius.circular(5),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
+                  ),
+                ],
               ),
               child: TextField(
                 onChanged: (value) {
@@ -298,28 +317,25 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   });
                 },
                 decoration: const InputDecoration(
-                  hintText: 'Search',
+                  hintText: 'Search for plants...',
                   hintStyle: TextStyle(
                     fontSize: 18,
                     color: Colors.grey,
                   ),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                  ),
+                  border: InputBorder.none,
                   prefixIcon: Icon(Icons.search),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 15,
-                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 15),
                 ),
               ),
             ),
             const SizedBox(height: 20),
+
+            // Display results or no results found
             if (filteredPlants.isEmpty)
               const Expanded(
                 child: Center(
                   child: Text(
-                    'Cannot be found.',
+                    'No plants found.',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -343,30 +359,82 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           ),
                         );
                       },
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 10.0),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                            color: const Color(0xFF08411c),
-                            width: 3,
+                      onLongPress: () {
+                        // Show the preview when the user long-presses a card
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(
+                                    plant['image1']!,
+                                    width: screenWidth * 0.95, // Increase image width
+                                    height: 300, // Larger image height
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(height: 15),
+                                Text(
+                                  plant['plantName']!,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Scientific Name: ${plant['scientificName']}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'Tagalog Name: ${plant['tagalogName']}',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          borderRadius: BorderRadius.circular(5),
+                        );
+                      },
+                      onLongPressUp: () {
+                        // Close the preview dialog when the long press is released
+                        Navigator.of(context).pop();
+                      },
+                      child: Card(
+                        margin: const EdgeInsets.symmetric(vertical: 12.0),
+                        elevation: 4.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
+                        color: Colors.white,
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(12.0),
                           child: Row(
                             children: [
                               ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
+                                borderRadius: BorderRadius.circular(8),
                                 child: Image.asset(
                                   plant['image1']!,
-                                  width: 150,
-                                  height: 150,
+                                  width: 120,
+                                  height: 120,
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 15),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,14 +449,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                     Text(
                                       plant['scientificName']!,
                                       style: const TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 16,
                                         fontStyle: FontStyle.italic,
                                       ),
                                     ),
                                     Text(
                                       'Also known as ${plant['tagalogName']}',
                                       style: const TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 16,
                                         color: Colors.grey,
                                       ),
                                     ),
@@ -408,4 +476,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
     );
   }
+
+
+
+
+
 }

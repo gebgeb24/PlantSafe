@@ -54,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child:
-            Image.asset('assets/images/whitelogo.jpg', width: 500, height: 500),
+        Image.asset('assets/images/logo.png', width: 450, height: 450),
       ),
     );
   }
@@ -72,61 +72,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Trivia(
       title: 'Buttercup',
       description:
-          'Throughout history, buttercups have been associated with various meanings such as happiness, wealth, prosperity, and even childhood nostalgia. They are often regarded as a symbol of positivity and joy.',
+      'Throughout history, buttercups have been associated with various meanings such as happiness, wealth, prosperity, and even childhood nostalgia. They are often regarded as a symbol of positivity and joy.',
       imageUrl: 'assets/images/trivia/buttercup.jpg',
     ),
     Trivia(
       title: 'Clematis',
       description:
-          'The nectar-rich flowers of clematis are a magnet for butterflies and bees. By planting clematis in your garden, you can create a welcoming habitat for these important pollinators, helping to support biodiversity and the overall health of your ecosystem.',
+      'The nectar-rich flowers of clematis are a magnet for butterflies and bees. By planting clematis in your garden, you can create a welcoming habitat for these important pollinators, helping to support biodiversity and the overall health of your ecosystem.',
       imageUrl: 'assets/images/trivia/clematis.jpg',
     ),
     Trivia(
       title: 'Copperleaf',
       description:
-          'The Acalypha wilkesiana, commonly known as Copperleaf, is a stunning plant with vibrant red, bronze, and green foliage that can beautify any garden or indoor space. However, its sap can cause skin irritation or dermatitis, so it is essential to handle it with care.',
+      'The Acalypha wilkesiana, commonly known as Copperleaf, is a stunning plant with vibrant red, bronze, and green foliage that can beautify any garden or indoor space. However, its sap can cause skin irritation or dermatitis, so it is essential to handle it with care.',
       imageUrl: 'assets/images/trivia/copperleaf.jpg',
     ),
     Trivia(
       title: 'Crinum Lily',
       description:
-          'Crinum Lily has a long lifespan, with some varieties living for up to 50 years or more. This longevity ensures years of enjoyment for gardeners who choose to cultivate this striking plant.',
+      'Crinum Lily has a long lifespan, with some varieties living for up to 50 years or more. This longevity ensures years of enjoyment for gardeners who choose to cultivate this striking plant.',
       imageUrl: 'assets/images/trivia/crinum lily.jpg',
     ),
     Trivia(
       title: 'Elephant\'s Ear',
       description:
-          'Elephant\'s Ear is sometimes grown as a crop in Southeast Asia and Hawaii. When cooked properly, the tubers can be turned into potato-like food, though raw plants can be toxic to children or pets.',
+      'Elephant\'s Ear is sometimes grown as a crop in Southeast Asia and Hawaii. When cooked properly, the tubers can be turned into potato-like food, though raw plants can be toxic to children or pets.',
       imageUrl: 'assets/images/trivia/elephant ear.JPG',
     ),
     Trivia(
       title: 'Fishtail Palm',
       description:
-          'The fruit starts out green and ends up black/purple when it ripens. The seed is edible, but the soft part on the outside (pericarp) contains calcium oxalates and is inedible.',
+      'The fruit starts out green and ends up black/purple when it ripens. The seed is edible, but the soft part on the outside (pericarp) contains calcium oxalates and is inedible.',
       imageUrl: 'assets/images/trivia/fishtail palm.jpg',
     ),
     Trivia(
       title: 'Hydrangea',
       description:
-          'Hydrangeas have symbolic meanings that vary by culture; in Japan, they symbolize apology and gratitude, while in the United States, they often represent heartfelt emotion and are popular Mother\'s Day gifts.',
+      'Hydrangeas have symbolic meanings that vary by culture; in Japan, they symbolize apology and gratitude, while in the United States, they often represent heartfelt emotion and are popular Mother\'s Day gifts.',
       imageUrl: 'assets/images/trivia/hydrangea.jpg',
     ),
     Trivia(
       title: 'Iris',
       description:
-          'Some species of iris flowers are known for their sweet fragrance, which has made them popular in the perfume industry.',
+      'Some species of iris flowers are known for their sweet fragrance, which has made them popular in the perfume industry.',
       imageUrl: 'assets/images/trivia/iris.JPG',
     ),
     Trivia(
       title: 'Pothos',
       description:
-          'Research has shown that pothos plants have the ability to remove toxins like formaldehyde, benzene, and xylene from the air, making it a great addition to any home or office.',
+      'Research has shown that pothos plants have the ability to remove toxins like formaldehyde, benzene, and xylene from the air, making it a great addition to any home or office.',
       imageUrl: 'assets/images/trivia/pothos.JPG',
     ),
     Trivia(
       title: 'Stinging Nettles',
       description:
-          'During the Second World War, children were encouraged to collect them so that they could be used to produce a dark green dye for camouflage.',
+      'During the Second World War, children were encouraged to collect them so that they could be used to produce a dark green dye for camouflage.',
       imageUrl: 'assets/images/trivia/stinging nettle.JPG',
     ),
   ];
@@ -145,123 +145,127 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFe9ffc8),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          // Logo
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: Image.asset(
-              'assets/images/logo.jpg',
-              width: screenWidth * 0.9,
-            ),
-          ),
-          // Title
-          const Text(
-            'Your Go-to Toxic\nPlant Guide',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFe2a52a),
-              shadows: [
-                Shadow(
-                  offset: Offset(2.0, 2.0),
-                  blurRadius: 3.0,
-                  color: Color(0x80000000),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 30),
-
-          // Scan Plant Button
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: _buildButton(
-              context,
-              'Scan Plant',
-              () {
-                _showScanOptionsDialog(context);
-              },
-              screenWidth - 64,
-              'assets/images/scan.png',
-            ),
-          ),
-          const SizedBox(height: 15),
-
-          // Row with Library and User Manual buttons
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildButton(
-                  context,
-                  'Library',
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LibraryScreen()),
-                    ).then((_) {
-                      _showTriviaPopup();
-                    });
-                  },
-                  (screenWidth - 80) / 2,
-                  'assets/images/leaf.png',
-                ),
-                _buildButton(
-                  context,
-                  'User Manual',
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const UserManualScreen()),
-                    ).then((_) {
-                      _showTriviaPopup();
-                    });
-                  },
-                  (screenWidth - 80) / 2,
-                  'assets/images/manual.png',
-                ),
-              ],
-            ),
-          ),
-
-          // Spacer to push the References button to the bottom
-          const SizedBox(height: 20),
-
-          // References Button (Different Style)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 30.0),
-            child: TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ReferenceScreen()),
-                );
-              },
-              style: TextButton.styleFrom(
-                backgroundColor: const Color(0xFF4fae50), // No background color
-                padding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: const BorderSide(
-                      color: Color(0xFF08411c), width: 5), // Black border
+      body: Stack(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              // Logo
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: screenWidth * 0.9,
                 ),
               ),
-              child: const Text(
-                'References',
+              // Title
+              const Text(
+                'Your Go-to Toxic\nPlant Guide',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 16, // Adjusted font size
-                  fontWeight: FontWeight.bold, // Bold text
-                  color: Color(0xFF05421c), // Black text
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF309c39)
+                  ,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(2.0, 2.0),
+                      blurRadius: 3.0,
+                      color: Color(0x80000000),
+                    ),
+                  ],
                 ),
               ),
+              const SizedBox(height: 30),
+
+              // 2x2 Grid of Buttons
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: GridView.builder(
+                  shrinkWrap: true, // To make it work inside a Column
+                  physics: NeverScrollableScrollPhysics(), // Disable scroll
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, // 2 columns
+                    crossAxisSpacing: 20.0,
+                    mainAxisSpacing: 20.0,
+                  ),
+                  itemCount: 4,
+                  itemBuilder: (context, index) {
+                    switch (index) {
+                      case 0:
+                        return _buildButton(
+                          context,
+                          'Scan',
+                              () {
+                            _showScanOptionsDialog(context);
+                          },
+                          screenWidth / 2 - 32,
+                          'assets/images/mainScan.png',
+                        );
+                      case 1:
+                        return _buildButton(
+                          context,
+                          'Library',
+                              () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LibraryScreen()),
+                            ).then((_) {
+                              _showTriviaPopup();
+                            });
+                          },
+                          screenWidth / 2 - 32,
+                          'assets/images/mainLibrary.png',
+                        );
+                      case 2:
+                        return _buildButton(
+                          context,
+                          'Manual',
+                              () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const UserManualScreen()),
+                            ).then((_) {
+                              _showTriviaPopup();
+                            });
+                          },
+                          screenWidth / 2 - 32,
+                          'assets/images/mainManual.png',
+                        );
+                      case 3:
+                        return _buildButton(
+                          context,
+                          'References',
+                              () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const ReferenceScreen()),
+                            );
+                          },
+                          screenWidth / 2 - 32,
+                          'assets/images/mainReference.png',
+                        );
+                      default:
+                        return Container();
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+          // Grass image at the bottom
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              'assets/images/grass.png',
+              width: screenWidth,
+              fit: BoxFit.fitWidth,
             ),
           ),
         ],
@@ -271,25 +275,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildButton(BuildContext context, String text, VoidCallback onPressed,
       double width, String iconPath) {
-    const double iconSize = 100; // Adjusted icon size
+    const double iconSize = 70; // Adjusted icon size
     const double textHeight = 30; // Estimated height for the text line
     const double padding = 20; // Padding around the icon and text
+    const double iconTextSpacing = 15; // Additional space between the icon and text
 
     return SizedBox(
       width: width,
-      height: iconSize + textHeight + padding,
-      // Dynamically set height based on icon and text
+      height: iconSize + textHeight + padding + iconTextSpacing, // Increase height for spacing
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF4fae50),
+          backgroundColor: const Color(0xFF309c39)
+          ,
           // Set button background color
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0), // Rounded corners
-            side: const BorderSide(
-              color: Color(0xFF08411c), // Border color
-              width: 5, // Border width
-            ),
+            borderRadius: BorderRadius.circular(25.0), // Rounded corners
           ),
         ),
         child: Column(
@@ -299,13 +300,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               iconPath,
               width: iconSize, // Adjust icon size here
               height: iconSize,
+              color: const Color(0xFFe9ffc8), // Set icon color
             ),
+            const SizedBox(height: iconTextSpacing), // Adds space between the icon and the text
             Text(
               text,
               style: const TextStyle(
-                fontSize: 16, // Adjusted font size
+                fontSize: 18, // Adjusted font size
                 fontWeight: FontWeight.bold, // Bold text
-                color: Color(0xFF05421c), // Button text color #05421c
+                color: Color(0xFFe9ffc8), // Set text color to Color(0xFFe9ffc8)
               ),
             ),
           ],
@@ -313,6 +316,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+
 
   void _showScanOptionsDialog(BuildContext context) {
     showDialog(
@@ -349,7 +353,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     MaterialPageRoute(
                         builder: (context) => const ScanPlantScreen(
                             gallery:
-                                true)), // Navigate to ScanPlantScreen with gallery option
+                            true)), // Navigate to ScanPlantScreen with gallery option
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -408,7 +412,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black12,
                   blurRadius: 12,
@@ -497,7 +501,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-// Function to show full-screen zoomable image
+  // Function to show full-screen zoomable image
   void _showFullScreenImage(BuildContext context, String imageUrl) {
     showDialog(
       context: context,
@@ -536,13 +540,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
     );
   }
-
-
-
-
-
-
-
 
   void showInstructionDialog(BuildContext context) {
     showDialog(
@@ -587,7 +584,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          const ScanPlantScreen(camera: true)),
+                      const ScanPlantScreen(camera: true)),
                 ); // Open camera
               },
               child: const Text(
@@ -603,7 +600,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-// Helper function to build instruction rows with icons
+  // Helper function to build instruction rows with icons
   Widget _buildInstructionRow(String imagePath, String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),

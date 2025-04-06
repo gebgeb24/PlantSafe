@@ -85,6 +85,7 @@ flutter:
   assets:
      - assets/images/whitelogo.jpg
      - assets/images/logo.jpg
+     - assets/images/logo.png
      - assets/images/buttercup.JPG
      - assets/model/model.tflite
      - assets/model/model_latest.tflite
@@ -165,9 +166,17 @@ flutter:
      - assets/images/manual.png
      - assets/images/gps2.png
      - assets/images/sun.png
+     - assets/images/mainReference.png
+     - assets/images/mainScan.png
+     - assets/images/mainLibrary.png
+     - assets/images/mainManual.png
+     - assets/images/grass.png
+     - assets/images/caution.png
      - assets/images/mobile.png
      - assets/images/leaf1.png
      - assets/images/reach.png
+     - assets/images/plant.png
+     - assets/images/eleEars.jpg
      - assets/gif/step1.gif
      - assets/gif/step2.jpg
      - assets/gif/step3.gif
