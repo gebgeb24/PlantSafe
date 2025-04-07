@@ -428,14 +428,58 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
         _interpreter!.run(inputTensor, output);
       }
 
+      // Function to check for green shades in the image
+      bool checkForGreenShades(img.Image image) {
+        int greenPixelCount = 0;
+        int totalPixels = image.width * image.height;
+
+        for (int y = 0; y < image.height; y++) {
+          for (int x = 0; x < image.width; x++) {
+            int pixel = image.getPixel(x, y);
+            int red = img.getRed(pixel);
+            int green = img.getGreen(pixel);
+            int blue = img.getBlue(pixel);
+
+            // If the green component is higher than the others, consider it a green shade
+            if (green > red && green > blue) {
+              greenPixelCount++;
+            }
+          }
+        }
+
+        // If the number of green pixels exceeds 20% of the total pixels, consider it as having green shades
+        return greenPixelCount / totalPixels > 0.2;
+      }
+
+
       setState(() {
         List<double> outputValues = output[0].cast<double>();
         double confidenceScore = outputValues.reduce((a, b) => a > b ? a : b);
-        int predictedClassIndex = confidenceScore >= 0.7
+        int predictedClassIndex = confidenceScore >= 0.8
             ? outputValues.indexOf(confidenceScore)
             : 10; // Use index 10 for "Invalid"
 
         String predictedClassName = classNames[predictedClassIndex];
+
+        // Logic to check "Non-Irritant" class (index 11)
+        if (predictedClassName == "Non-Irritant" && confidenceScore < 0.9) {
+          predictedClassName = "Invalid";  // Mark as invalid if "Non-Irritant" has low confidence
+          confidenceScore = 0.0;  // Set confidence to 0 since it's invalid
+        }
+
+        // Keeping "Invalid" class even if confidence is low (below 70%)
+        if (predictedClassName == "Invalid" && confidenceScore < 0.7) {
+          confidenceScore = 0.0;  // Set confidence to 0, but still classify as "Invalid"
+        }
+
+        // Check for green shades in the image if predicted class is "Non-Irritant"
+        if (predictedClassName == "Non-Irritant") {
+          bool hasGreenShades = checkForGreenShades(image); // Call the function to check for green tones
+          if (!hasGreenShades) {
+            predictedClassName = "Invalid"; // Mark as invalid if no green shades
+            confidenceScore = 0.0; // Set confidence to 0
+          }
+        }
 
         var details = predictedClassName != "Invalid"
             ? plantDetails[predictedClassName]
@@ -452,8 +496,8 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
 
         print('Accuracy: ${confidenceScore * 100}%');
         print('Predicted Class: $predictedClassName');
-        print('classNames length: ${classNames.length}');
-        print('predictedClassIndex: $predictedClassIndex');
+        print('ClassNames length: ${classNames.length}');
+        print('PredictedClassIndex: $predictedClassIndex');
 
         _result = 'Predicted class: $predictedClassName\n';
 
@@ -464,6 +508,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
             break;
           }
         }
+
         _result +=
         'Accuracy: ${(confidenceScore * 100).round()}%\n'
             '${details?["scientificName"]}\n'
@@ -474,8 +519,12 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
             '${details?["toxicityIndex"]}\n'
             '${details?["plantDescription"]}\n'
             '${details?["toxicityDescription"]}\n';
+
         _isLoading = false;
       });
+
+
+
 
     } catch (e) {
       print('Error analyzing image: $e');
@@ -555,6 +604,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                       color: Colors.black87,
                     ),
                   ),
+
                   Text(
                     _result.split('\n').length > 1
                         ? _result.split('\n')[1]
