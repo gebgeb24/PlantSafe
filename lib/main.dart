@@ -54,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child:
-        Image.asset('assets/images/logo.png', width: 450, height: 450),
+        Image.asset('assets/images/logo.png', width: 350, height: 350),
       ),
     );
   }
@@ -453,7 +453,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Image.asset(
                         trivia.imageUrl,
                         width: double.infinity, // Image will take up available width
-                        height: 400, // Set height to prevent large gaps
+                        height: 300, // Set height to prevent large gaps
                         fit: BoxFit.cover,
                       ),
                     ),

@@ -287,7 +287,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   const Text(
                     'Beware of these plants',
                     style: TextStyle(
-                      fontSize: 28,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: const Color(0xFFfcbe37),
                     ),

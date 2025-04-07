@@ -43,6 +43,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     "Pothos",
     "Stinging Nettle",
     "Invalid",
+    "Non-Irritant",
   ];
 
   // Map to hold details for each plant
@@ -151,10 +152,21 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "scientificName": "Invalid",
       "tagalogName": "Invalid",
       "toxicityIndex": "Invalid",
-      "plantDescription": "This may be due to one or more of the following reasons:\\n- The image is not a plant.\\n- The plant is toxic but not an irritant type.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",      "toxicityDescription": "Invalid",
+      "plantDescription": "This may be due to one or more of the following reasons:\\n- The image is not a plant.\\n- The plant is toxic but not an irritant type.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
+      "toxicityDescription": "Invalid",
       "genus": "Invalid",
       "species": "Invalid",
       "family": "Invalid",
+    },
+    "Non-Irritant": {
+      "scientificName": "Non-Irritant",
+      "tagalogName": "Non-Irritant",
+      "toxicityIndex": "Non-Irritant",
+      "plantDescription": "This may be due to one or more of the following reasons:\\n- This may be due to the plant being toxic but not an irritant. \\n- It may not be toxic in nature.",
+      "toxicityDescription": "Non-Irritant",
+      "genus": "Non-Irritant",
+      "species": "Non-Irritant",
+      "family": "Non-Irritant",
     },
   };
 
@@ -224,7 +236,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       return;
     }
 
-    else if (_result.contains('Bulbous buttercup')) {
+    else if (_result.contains('Non-Irritant')) {
       await _flutterTts.speak(
           "The plant is classified as non-irritant. This may be due to the plant being toxic but not an irritant, or it may not be toxic in nature."
       );
@@ -321,7 +333,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
 
   Future<void> _loadModel() async {
     try {
-      _interpreter = await Interpreter.fromAsset('assets/model/model.tflite');
+      _interpreter = await Interpreter.fromAsset('assets/model/modelnewnontoxic.tflite');
       print('Model loaded successfully!');
     } catch (e) {
       print('Error loading model: $e');
@@ -410,7 +422,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
         ),
       );
 
-      var output = List.filled(1 * 11, 0.0).reshape([1, 11]);
+      var output = List.filled(1 * 12, 0.0).reshape([1, 12]);
 
       if (_interpreter != null) {
         _interpreter!.run(inputTensor, output);
@@ -527,7 +539,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   const SizedBox(height: 5),
                 ],
 
-                if (!_result.contains('Invalid') && !_result.contains("Bulbous buttercup")) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                   Text(
                     _result.split('\n').isNotEmpty &&
                         _result.split('\n')[0].length > 15
@@ -558,12 +570,12 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                 Container(
                   width: boxWidth,
                   decoration: BoxDecoration(
-                    color: _result.contains('Invalid') || _result.contains("Bulbous buttercup")
+                    color: _result.contains('Invalid') || _result.contains("Non-Irritant")
                         ? const Color(0xFF363636)
                         : Colors.red,
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(
-                      color: _result.contains('Invalid') || _result.contains("Bulbous buttercup")
+                      color: _result.contains('Invalid') || _result.contains("Non-Irritant")
                           ? const Color(0xFF000000)
                           : const Color(0xFF980000),
                       width: 3,
@@ -572,7 +584,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   padding: const EdgeInsets.all(10.0),
                   child: Text(
                     _result.contains('Invalid') ? 'INVALID' :
-                    _result.contains("Bulbous buttercup") ? 'NON-IRRITANT' :
+                    _result.contains("Non-Irritant") ? 'NON-IRRITANT' :
                     'TOXIC',
                     style: const TextStyle(
                       color: Colors.white,
@@ -585,7 +597,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
 
                 const SizedBox(height: 10),
 
-                if (!_result.contains('Invalid') && !_result.contains("Bulbous buttercup")) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                   Container(
                     width: boxWidth,
                     decoration: BoxDecoration(
@@ -683,23 +695,25 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        _result.contains('Invalid')
-                            ? 'The image is invalid.'
-                            : _result.contains("Bulbous buttercup")
-                            ? 'The image is non-irritant.'
-                            : _result.split('\n').isNotEmpty &&
-                            _result.split('\n')[0].length > 15
-                            ? _result
-                            .split('\n')[0]
-                            .substring(_result.split('\n')[0].indexOf(':') + 1)
-                            .trim()
-                            : '',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          color: Colors.black87,
+                      Center(
+                        child: Text(
+                          _result.contains('Invalid')
+                              ? 'The image is invalid.'
+                              : _result.contains("Non-Irritant")
+                              ? 'Image is non-irritant.'
+                              : _result.split('\n').isNotEmpty &&
+                              _result.split('\n')[0].length > 15
+                              ? _result
+                              .split('\n')[0]
+                              .substring(_result.split('\n')[0].indexOf(':') + 1)
+                              .trim()
+                              : '',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Colors.black87,
+                          ),
                         ),
                       ),
 
@@ -707,7 +721,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
 
                       // For Elephant's Ear, only show the description like Invalid
                       // Show only description if result is Invalid or Elephant's Ear
-                      if (_result.contains('Invalid') || _result.contains("Bulbous buttercup")) ...[
+                      if (_result.contains('Invalid') || _result.contains("Non-Irritant")) ...[
                         Container(
                           decoration: BoxDecoration(
                             color: const Color(0xFFE2E2E2),
@@ -727,7 +741,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                         ),
                       ]
 // Show full scientific info if result is valid and not Elephant's Ear
-                      else if (!_result.contains('Invalid') && !_result.contains("Bulbous buttercup")) ...[
+                      else if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                         RichText(
                           text: TextSpan(
                             style: const TextStyle(fontSize: 20, color: Colors.black),
@@ -828,7 +842,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   ),
                 ),
 
-                if (!_result.contains('Invalid') && !_result.contains("Bulbous buttercup")) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: ElevatedButton(
