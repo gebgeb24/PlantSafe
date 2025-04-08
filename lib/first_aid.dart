@@ -271,77 +271,53 @@ class _FirstAidState extends State<FirstAid> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // First aid guide section
+                // First aid guide section
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                      color: const Color(0xFF4FAE50),
-                      width: 3,
-                    ),
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
                       ),
                     ],
                   ),
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(16),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Center(
-                        child: Text(
-                          'First aid guide for: ${widget.predictedClass}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF4FAE50),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,  // Center the content horizontally
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.white,
+                            size: 24,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Center(
-                        child: Text(
-                          'Toxicity Index: ${widget.toxicityIndex}',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF4FAE50),
+                          const SizedBox(width: 3),
+                          Text(
+                            '${widget.predictedClass}',
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                            textAlign: TextAlign.center,  // Ensure the text is centered within the available space
                           ),
-                          textAlign: TextAlign.center,
-                        ),
+
+                        ],
                       ),
+                      // Wrapping the indicators in a container that will shrink or expand as needed
+
                     ],
                   ),
                 ),
 
+
                 const SizedBox(height: 10),
-                // TOXIC section
-                Container(
-                  width: MediaQuery.of(context).size.width * 0.90,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                      color: const Color(0xFF980000),
-                      width: 3,
-                    ),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: const Text(
-                    'TOXIC',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+
                 const SizedBox(height: 10),
                 // Loop through each matched toxicity level and display its details
                 for (var details in matchedToxicityDetails) ...[
@@ -351,11 +327,8 @@ class _FirstAidState extends State<FirstAid> {
                       padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(
-                          color: const Color(0xFF4FAE50),
-                          width: 3,
-                        ),
+                        borderRadius: BorderRadius.circular(10),
+
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,8 +390,8 @@ class _FirstAidState extends State<FirstAid> {
                           Container(
                             decoration: BoxDecoration(
                               color: const Color(0xFFE2E2E2),
-                              border: Border.all(color: const Color(0xFF4FAE50), width: 3),
-                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey, width: 2),
+                              borderRadius: BorderRadius.circular(5),
                             ),
                             padding: const EdgeInsets.all(10.0),
                             child: Column(

@@ -57,6 +57,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Ranunculus",
       "species": "bulbosus",
       "family": "Ranunculaceae",
+      "img1" : "assets/images/library/1SN.png",
+      "img2" : "assets/images/library/2SN.png",
+      "img3" : "assets/images/library/3SN.png",
     },
     "Clematis": {
       "scientificName": "Clematis recta",
@@ -162,7 +165,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "scientificName": "Non-Irritant",
       "tagalogName": "Non-Irritant",
       "toxicityIndex": "Non-Irritant",
-      "plantDescription": "This may be due to one or more of the following reasons:\\n- This may be due to the plant being toxic but not an irritant. \\n- It may not be toxic in nature.",
+      "plantDescription": "This may be due to one or more of the following reasons:\\n- The plant is toxic but not an irritant type. \\n- The plant may not be toxic in nature.",
       "toxicityDescription": "Non-Irritant",
       "genus": "Non-Irritant",
       "species": "Non-Irritant",
@@ -231,14 +234,14 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
   Future<void> _speak() async {
     if (_result.contains('Invalid')) {
       await _flutterTts.speak(
-          "The image is invalid. This may be due to one or more of the following reasons: The image is not a plant. The photo has low visibility or insufficient light. The picture is not clear or is improperly taken."
+          "The image is invaughlid. This may be due to one or more of the following reasons: The image is not a plant. The photo has low visibility or insufficient light. The picture is not clear or is improperly taken."
       );
       return;
     }
 
     else if (_result.contains('Non-Irritant')) {
       await _flutterTts.speak(
-          "The plant is classified as non-irritant. This may be due to the plant being toxic but not an irritant, or it may not be toxic in nature."
+          "The plant is classified as non-irritant. This may be due to one or more of the following reasons: The plant is toxic but not an irritant type, or the plant may not be toxic in nature."
       );
       return;
     }
@@ -623,19 +626,20 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                     color: _result.contains('Invalid') || _result.contains("Non-Irritant")
                         ? const Color(0xFF363636)
                         : Colors.red,
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(
-                      color: _result.contains('Invalid') || _result.contains("Non-Irritant")
-                          ? const Color(0xFF000000)
-                          : const Color(0xFF980000),
-                      width: 3,
-                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 6),
+                      ),
+                    ],
                   ),
                   padding: const EdgeInsets.all(10.0),
                   child: Text(
                     _result.contains('Invalid') ? 'INVALID' :
                     _result.contains("Non-Irritant") ? 'NON-IRRITANT' :
-                    'TOXIC',
+                    'IRRITANT',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -650,15 +654,22 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                 if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                   Container(
                     width: boxWidth,
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: const Color(0xFF4FAE50), width: 3),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
                     ),
-                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Title
                         const Text(
                           'Toxicity Index:',
                           style: TextStyle(
@@ -667,81 +678,103 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 10),
+
+                        // Toxicity Score
                         Container(
                           width: boxWidth,
                           decoration: BoxDecoration(
                             color: const Color(0xFF4FAE50),
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.all(12.0),
                           margin: EdgeInsets.symmetric(horizontal: boxWidth * 0.01),
-                          child: Center(
-                            child: Text(
-                              _result.split('\n').length > 1
-                                  ? _result.split('\n')[7].trim()
-                                  : '',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.eco, color: Colors.white),
+                              Text(
+                                _result.split('\n').length > 1
+                                    ? _result.split('\n')[7].trim()
+                                    : '',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        Container(
-                          alignment: Alignment.center,
-                          child: RichText(
-                            text: TextSpan(
-                              children: _result.split('\n').length > 2
-                                  ? _result.split('\n').sublist(8).expand<InlineSpan>((line) {
-                                if (line.isNotEmpty) {
-                                  List<String> parts = line.split(':');
-                                  if (parts.length > 1) {
-                                    return [
-                                      TextSpan(
-                                        text: parts[0] + ': ',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
-                                          height: 1.5,
-                                          color: Colors.black87,
-                                        ),
+
+                        const SizedBox(height: 20),
+
+                        // Toxicity Details with Icons
+                        Column(
+                          children: _result.split('\n').length > 2
+                              ? _result
+                              .split('\n')
+                              .sublist(8)
+                              .where((line) => line.contains(':'))
+                              .map((line) {
+                            List<String> parts = line.split(':');
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 6.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Icon(Icons.info_outline, size: 20, color: Colors.grey),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: '${parts[0].trim()}: ',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: parts.sublist(1).join(':').trim(),
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      TextSpan(
-                                        text: parts[1].trim(),
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.black87,
-                                        ),
-                                      ),
-                                      const TextSpan(text: '\n'),
-                                    ];
-                                  }
-                                }
-                                return [];
-                              }).toList()
-                                  : [],
-                              style: const TextStyle(
-                                fontSize: 20,
-                                color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
+                            );
+                          }).toList()
+                              : [],
                         ),
                       ],
                     ),
-                  ),
+                  )
+
                 ],
                 const SizedBox(height: 10),
                 Container(
                   width: boxWidth,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: const Color(0xFF4FAE50), width: 3),
+                    borderRadius: BorderRadius.circular(12),
+
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -761,40 +794,37 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 22,
+                            fontSize: 20,
                             color: Colors.black87,
                           ),
                         ),
                       ),
 
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 16),
 
-                      // For Elephant's Ear, only show the description like Invalid
-                      // Show only description if result is Invalid or Elephant's Ear
+
                       if (_result.contains('Invalid') || _result.contains("Non-Irritant")) ...[
                         Container(
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE2E2E2),
-                            border: Border.all(color: const Color(0xFF4FAE50), width: 3),
-                            borderRadius: BorderRadius.circular(10),
+                            color: const Color(0xFFF0F4F0),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey, width: 2),
                           ),
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(14.0),
                           child: Text(
                             _result.split('\n').length > 8
                                 ? _result.split('\n')[8].trim().replaceAll('\\n', '\n')
                                 : '',
                             style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.black,
+                              fontSize: 18,
+                              color: Colors.black87,
                             ),
                           ),
                         ),
-                      ]
-// Show full scientific info if result is valid and not Elephant's Ear
-                      else if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
+                      ] else if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                         RichText(
                           text: TextSpan(
-                            style: const TextStyle(fontSize: 20, color: Colors.black),
+                            style: const TextStyle(fontSize: 18, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Scientific Name: ',
@@ -807,11 +837,10 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             ],
                           ),
                         ),
-
-
-                      RichText(
+                        const SizedBox(height: 8),
+                        RichText(
                           text: TextSpan(
-                            style: const TextStyle(fontSize: 20, color: Colors.black),
+                            style: const TextStyle(fontSize: 18, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Tagalog Name: ',
@@ -823,9 +852,10 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 8),
                         RichText(
                           text: TextSpan(
-                            style: const TextStyle(fontSize: 20, color: Colors.black),
+                            style: const TextStyle(fontSize: 18, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Genus: ',
@@ -838,9 +868,10 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 8),
                         RichText(
                           text: TextSpan(
-                            style: const TextStyle(fontSize: 20, color: Colors.black),
+                            style: const TextStyle(fontSize: 18, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Species: ',
@@ -853,9 +884,10 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             ],
                           ),
                         ),
+                        const SizedBox(height: 8),
                         RichText(
                           text: TextSpan(
-                            style: const TextStyle(fontSize: 20, color: Colors.black),
+                            style: const TextStyle(fontSize: 18, color: Colors.black),
                             children: [
                               const TextSpan(
                                 text: 'Family: ',
@@ -867,23 +899,23 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 16),
                         Container(
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE2E2E2),
-                            border: Border.all(color: const Color(0xFF4FAE50), width: 3),
-                            borderRadius: BorderRadius.circular(10),
+                            color: const Color(0xFFF0F4F0),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: const Color(0xFFD9D5CA), width: 2),
                           ),
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(14.0),
                           child: Text(
                             _result.isEmpty
                                 ? ''
                                 : _result.split('\n').length > 1
-                                ? _result.split('\n')[8].trim().replaceAll('\\n', '\n') // Replace \\n with actual newlines
-                                : '', // Provide an empty string if there's no value
+                                ? _result.split('\n')[8].trim().replaceAll('\\n', '\n')
+                                : '',
                             style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.black, // Text color for the description
+                              fontSize: 17,
+                              color: Colors.black87,
                             ),
                           ),
                         ),
@@ -891,6 +923,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                     ],
                   ),
                 ),
+
 
                 if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                   Padding(
