@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:async'; // Import for Timer
+import 'dart:async';
+import 'package:flutter/services.dart';
 
 class UserManualScreen extends StatefulWidget {
   const UserManualScreen({super.key});
@@ -10,39 +11,125 @@ class UserManualScreen extends StatefulWidget {
 
 class _UserManualScreenState extends State<UserManualScreen> {
   final PageController _pageController = PageController();
-  bool _showSwipeIndicator = true; // Flag to show or hide the swipe indicator
+  bool _showSwipeIndicator = true;
+  int _currentPage = 0;
+  Timer? _indicatorTimer;
 
-  final List<String> _stepContent = [
-    'Select "Scan Plant" to capture a photo or choose one from your gallery.',
-    'Ensure the plant image is clear, well-lit, in focus, and not blurry.',
-    'The system will identify the plant and display details, along with a "First Aid" button at the bottom.',
-    'In the "First Aid" module, the appropriate treatment for the identified toxicity level will be shown. If immediate action is needed, click "Call Emergency".',
-    'Clicking "Call Emergency" will automatically open your phone’s call app with the default emergency contact number pre-entered.',
-  ];
-
-  // List of GIFs corresponding to each step
-  final List<String> _gifPaths = [
-    'assets/gif/step1.gif',
-    'assets/gif/step2.jpg',
-    'assets/gif/step3.gif',
-    'assets/gif/step4.gif',
-    'assets/gif/step5.gif',
+  final List<Map<String, dynamic>> _steps = [
+    {
+      'title': 'Capture or Select Plant',
+      'description': 'Use the "Scan Plant" feature to either take a new photo or choose one from your gallery.',
+      'image': 'assets/gif/step1.gif',
+      'icon': Icons.camera_alt,
+      'hasBullets': false,
+    },
+    {
+      'title': 'Ensure Image Quality',
+      'description': '', // Empty description for step 2
+      'image': 'assets/gif/step2.jpg',
+      'icon': Icons.photo_camera,
+      'hasBullets': false,
+    },
+    {
+      'title': 'View Plant Details',
+      'description': 'The app will identify the plant and show:\n• Toxicity level\n• Scientific information\n• First Aid button',
+      'image': 'assets/gif/step3.gif',
+      'icon': Icons.eco,
+      'hasBullets': true,
+    },
+    {
+      'title': 'First Aid Guidance',
+      'description': 'The "First Aid" section provides:\n• Specific treatment steps\n• Emergency actions\n• Call emergency option',
+      'image': 'assets/gif/step4.gif',
+      'icon': Icons.medical_services,
+      'hasBullets': true,
+    },
+    {
+      'title': 'Emergency Calling',
+      'description': 'In urgent cases:\n• Tap "Call Emergency"\n• App will dial local emergency number\n• Follow operator instructions',
+      'image': 'assets/gif/step5.png',
+      'icon': Icons.emergency,
+      'hasBullets': true,
+    },
   ];
 
   @override
   void initState() {
     super.initState();
-    // Hide the swipe indicator after 10 seconds
-    Timer(const Duration(seconds: 10), () {
-      setState(() {
-        _showSwipeIndicator = false;
-      });
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+    _indicatorTimer = Timer(const Duration(seconds: 8), () {
+      if (mounted) {
+        setState(() => _showSwipeIndicator = false);
+      }
     });
   }
 
   @override
+  void dispose() {
+    _indicatorTimer?.cancel();
+    _pageController.dispose();
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    super.dispose();
+  }
+
+  Widget _buildDescriptionText(String text, bool hasBullets) {
+    if (!hasBullets) {
+      return Text(
+        text,
+        style: const TextStyle(
+          fontSize: 18,
+          height: 1.5,
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
+
+    final lines = text.split('\n');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: lines.map((line) {
+        if (line.startsWith('•')) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('• ', style: TextStyle(fontSize: 18)),
+                Expanded(
+                  child: Text(
+                    line.substring(2),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Text(
+            line,
+            style: const TextStyle(
+              fontSize: 18,
+              height: 1.5,
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +140,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color(0xFF369E40),
+        backgroundColor: const Color(0xFF4FAE50),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
@@ -63,113 +150,229 @@ class _UserManualScreenState extends State<UserManualScreen> {
         centerTitle: true,
       ),
       body: Container(
-        color: const Color(0xFFE9FFC8),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFFE9FFC8),
+              Color(0xFFD1F0A8),
+            ],
+          ),
+        ),
         child: Stack(
           children: [
-            // PageView for steps
-            PageView.builder(
-              controller: _pageController,
-              itemCount: _stepContent.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Step Number with bold styling inside a colored box
-                      Container(
+            // Main Content
+            Column(
+              children: [
+                // Progress Indicator
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _steps.length,
+                          (index) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: _currentPage == index ? 24 : 8,
+                        height: 8,
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4FAE50),
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        child: Text(
-                          'Step ${index + 1}:',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
+                          color: _currentPage == index
+                              ? const Color(0xFF4FAE50)
+                              : Colors.grey.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                       ),
-                      const SizedBox(height: 10), // Space between step title and content
-
-                      // Wrap the entire content in a SingleChildScrollView to avoid overflow
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(
-                                color: const Color(0xFF4FAE50),
-                                width: 3,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            width: MediaQuery.of(context).size.width * 0.9,
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              children: [
-                                // Step content text inside another box
-                                Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: const Color(0xFF4FAE50),
-                                      width: 3,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Text(
-                                    _stepContent[index],
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                const SizedBox(height: 10), // Space between text box and GIF
-
-                                // Step GIF inside the same parent box
-                                Container(
-                                  width: double.infinity,
-                                  child: Image.asset(
-                                    _gifPaths[index], // Use the appropriate GIF based on the step
-                                    fit: BoxFit.contain, // Adjusts the GIF to fit within the given space
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                );
-              },
+                ),
+
+                // Page View
+                Expanded(
+                  child: PageView.builder(
+                    controller: _pageController,
+                    itemCount: _steps.length,
+                    onPageChanged: (index) {
+                      setState(() => _currentPage = index);
+                      if (_indicatorTimer != null) {
+                        _indicatorTimer!.cancel();
+                      }
+                      _indicatorTimer = Timer(const Duration(seconds: 8), () {
+                        if (mounted) {
+                          setState(() => _showSwipeIndicator = false);
+                        }
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      final step = _steps[index];
+                      final isStep2 = index == 1;
+                      final isStep5 = index == 4;// Special case for step 2
+
+
+                      return AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        child: Padding(
+                          key: ValueKey<int>(index),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Card(
+                            elevation: 8,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.green.withOpacity(0.2),
+                                    blurRadius: 10,
+                                    spreadRadius: 2,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Header with Icon
+                                  Container(
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF4FAE50).withOpacity(0.1),
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(20),
+                                      ),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF4FAE50),
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.green.withOpacity(0.3),
+                                                blurRadius: 8,
+                                                spreadRadius: 2,
+                                              ),
+                                            ],
+                                          ),
+                                          child: Icon(
+                                            step['icon'] as IconData? ?? Icons.help,
+                                            size: 36,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'Step ${index + 1}: ${step['title']}',
+                                          style: theme.textTheme.headlineSmall?.copyWith(
+                                            color: const Color(0xFF2E7D32),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Content
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                                      child: SingleChildScrollView(
+                                        child: Column(
+                                          children: [
+                                            if (!isStep2 && step['description'].isNotEmpty)
+                                              Padding(
+                                                padding: const EdgeInsets.only(bottom: 20),
+                                                child: _buildDescriptionText(
+                                                  step['description'],
+                                                  step['hasBullets'],
+                                                ),
+                                              ),
+                                            Container(
+                                              height: isStep2 ? size.height * 0.55 : isStep5 ? size.height * 0.3 : size.height * 0.4,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(12),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black.withOpacity(0.1),
+                                                    blurRadius: 10,
+                                                    offset: const Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(12),
+                                                child: Image.asset(
+                                                  step['image']!,
+                                                  fit: BoxFit.contain,
+                                                  errorBuilder: (context, error, stackTrace) =>
+                                                  const Icon(Icons.image_not_supported, size: 10),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Footer
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Text(
+                                      '${index + 1}/${_steps.length}',
+                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-            // Swipe indication at the bottom
+
+            // Swipe Indicator
             if (_showSwipeIndicator)
               Positioned(
-                bottom: 20,
+                bottom: 30,
                 left: 0,
                 right: 0,
-                child: Center(
+                child: AnimatedOpacity(
+                  opacity: _showSwipeIndicator ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 500),
                   child: Column(
                     children: [
                       const Icon(
-                        Icons.swipe_left,
+                        Icons.swipe,
                         size: 40,
                         color: Colors.grey,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Swipe left or right to navigate',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 16,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Text(
+                          'Swipe to continue',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],

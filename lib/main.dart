@@ -147,131 +147,188 @@ class _DashboardScreenState extends State<DashboardScreen> {
       backgroundColor: const Color(0xFFe9ffc8),
       body: Stack(
         children: [
+          // Grass background image covering the whole screen
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.7, // 70% opacity
+              child: Image.asset(
+                'assets/images/grass1.png',
+                fit: BoxFit.cover,  // This will make the grass image cover the whole screen
+              ),
+            ),
+          ),
+
+          // Main content
           Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Logo
+              // Logo with padding at the top
               Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
+                padding: const EdgeInsets.only(top: 100.0),
                 child: Image.asset(
                   'assets/images/logo.png',
                   width: screenWidth * 0.9,
                 ),
               ),
-              // Title
-              const Text(
-                'Your Go-to Toxic\nPlant Guide',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF309c39)
-                  ,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(2.0, 2.0),
-                      blurRadius: 3.0,
-                      color: Color(0x80000000),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
+              // Title in front of the grass image
+              const Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Text with border
+                  Text(
+                    'Your Go-to Irritant\nToxic Plant Guide',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF284268), // Border color
+                      fontFamily: 'Roboto', // Add your desired font family
+                      shadows: [
+                        Shadow(
+                          offset: Offset(2.5, 2.5), // Adjust the shadow position for border effect
 
-              // 2x2 Grid of Buttons
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: GridView.builder(
-                  shrinkWrap: true, // To make it work inside a Column
-                  physics: NeverScrollableScrollPhysics(), // Disable scroll
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, // 2 columns
-                    crossAxisSpacing: 20.0,
-                    mainAxisSpacing: 20.0,
+                          color: Color(0xFF284268), // Border color
+                        ),
+                      ],
+                    ),
                   ),
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    switch (index) {
-                      case 0:
-                        return _buildButton(
-                          context,
-                          'Scan',
-                              () {
-                            _showScanOptionsDialog(context);
-                          },
-                          screenWidth / 2 - 32,
-                          'assets/images/mainScan.png',
-                        );
-                      case 1:
-                        return _buildButton(
-                          context,
-                          'Library',
-                              () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LibraryScreen()),
-                            ).then((_) {
-                              _showTriviaPopup();
-                            });
-                          },
-                          screenWidth / 2 - 32,
-                          'assets/images/mainLibrary.png',
-                        );
-                      case 2:
-                        return _buildButton(
-                          context,
-                          'Manual',
-                              () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const UserManualScreen()),
-                            ).then((_) {
-                              _showTriviaPopup();
-                            });
-                          },
-                          screenWidth / 2 - 32,
-                          'assets/images/mainManual.png',
-                        );
-                      case 3:
-                        return _buildButton(
-                          context,
-                          'References',
-                              () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const ReferenceScreen()),
-                            );
-                          },
-                          screenWidth / 2 - 32,
-                          'assets/images/mainReference.png',
-                        );
-                      default:
-                        return Container();
-                    }
-                  },
+                  // Text on top
+                  Text(
+                    'Your Go-to Irritant\nToxic Plant Guide',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF309c39), // Text color
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 10),
+
+              // Expanded to take up remaining space, pushing the white box to the bottom
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter, // Aligning the container to the bottom center
+                  child: Container(
+                    width: double.infinity, // Full width of the screen
+                    height: (MediaQuery.of(context).size.width / 2 + 30) * 2, // Dynamically calculate height based on buttons (2x2 grid)
+                    decoration: BoxDecoration(
+                      color: Colors.white
+
+
+                      , // White background
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(40), // Rounded top-left corner
+                        topRight: Radius.circular(40), // Rounded top-right corner
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5), // Subtle shadow color
+                          blurRadius: 5, // Soft blur effect
+                          offset: const Offset(0, -1), // Shadow positioned upwards to avoid overlap
+                          spreadRadius: 3, // Shadow spread
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0), // Adding padding to the bottom to prevent any background visibility
+                      child: Stack(
+                        children: [
+                          // 2x2 Grid of Buttons
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0), // Padding for buttons
+                            child: GridView.builder(
+                              shrinkWrap: true, // To make it work inside a Column
+                              physics: const NeverScrollableScrollPhysics(), // Disable scroll for the grid
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2, // 2 columns
+                                crossAxisSpacing: 20.0,
+                                mainAxisSpacing: 20.0,
+                              ),
+                              itemCount: 4,
+                              itemBuilder: (context, index) {
+                                switch (index) {
+                                  case 0:
+                                    return _buildButton(
+                                      context,
+                                      'Scan',
+                                          () {
+                                        _showScanOptionsDialog(context);
+                                      },
+                                      screenWidth / 2 - 32,
+                                      'assets/images/mainScan.png',
+                                    );
+                                  case 1:
+                                    return _buildButton(
+                                      context,
+                                      'Library',
+                                          () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const LibraryScreen(),
+                                          ),
+                                        ).then((_) {
+                                          _showTriviaPopup();
+                                        });
+                                      },
+                                      screenWidth / 2 - 32,
+                                      'assets/images/mainLibrary.png',
+                                    );
+                                  case 2:
+                                    return _buildButton(
+                                      context,
+                                      'Manual',
+                                          () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const UserManualScreen(),
+                                          ),
+                                        ).then((_) {
+                                          _showTriviaPopup();
+                                        });
+                                      },
+                                      screenWidth / 2 - 32,
+                                      'assets/images/mainManual.png',
+                                    );
+                                  case 3:
+                                    return _buildButton(
+                                      context,
+                                      'References',
+                                          () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const ReferenceScreen(),
+                                          ),
+                                        );
+                                      },
+                                      screenWidth / 2 - 32,
+                                      'assets/images/mainReference.png',
+                                    );
+                                  default:
+                                    return Container();
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(height: 20),
             ],
-          ),
-          // Grass image at the bottom
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Image.asset(
-              'assets/images/grass.png',
-              width: screenWidth,
-              fit: BoxFit.fitWidth,
-            ),
           ),
         ],
       ),
     );
   }
+
+
 
   Widget _buildButton(BuildContext context, String text, VoidCallback onPressed,
       double width, String iconPath) {
@@ -286,21 +343,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF309c39)
-          ,
-          // Set button background color
+          backgroundColor: const Color(0xFF309c39), // Set button background color
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25.0), // Rounded corners
+            borderRadius: BorderRadius.circular(20.0), // Rounded corners
           ),
+          elevation: 5, // Adds shadow with a default offset and blur
+        ).copyWith(
+          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.9)),
         ),
-        child: Column(
+
+
+      child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               iconPath,
               width: iconSize, // Adjust icon size here
               height: iconSize,
-              color: const Color(0xFFe9ffc8), // Set icon color
+              color: Colors.white, // Set icon color
             ),
             const SizedBox(height: iconTextSpacing), // Adds space between the icon and the text
             Text(
@@ -308,7 +368,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               style: const TextStyle(
                 fontSize: 18, // Adjusted font size
                 fontWeight: FontWeight.bold, // Bold text
-                color: Color(0xFFe9ffc8), // Set text color to Color(0xFFe9ffc8)
+                color: Colors.white, // Set text color to Color(0xFFe9ffc8)
               ),
             ),
           ],
@@ -453,7 +513,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Image.asset(
                         trivia.imageUrl,
                         width: double.infinity, // Image will take up available width
-                        height: 300, // Set height to prevent large gaps
+                        height: 200, // Set height to prevent large gaps
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -461,7 +521,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: 10), // Spacing between image and title
                   // Trivia Title Box
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(5),
                     decoration: BoxDecoration(
                       border: Border.all(color: const Color(0xFF00481c), width: 2),
                       borderRadius: BorderRadius.circular(10),
@@ -470,7 +530,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Text(
                         trivia.title,
                         style: const TextStyle(
-                          fontSize: 25,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF00481c),
                         ),
@@ -480,7 +540,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: 10), // Spacing between title and description
                   // Trivia Description Box
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF7F7F7),
                       borderRadius: BorderRadius.circular(12),
@@ -488,7 +548,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                     child: Text(
                       trivia.description,
-                      style: const TextStyle(fontSize: 18, color: Colors.black),
+                      style: const TextStyle(fontSize: 16, color: Colors.black),
                       textAlign: TextAlign.justify,
                     ),
                   ),

@@ -170,6 +170,7 @@ flutter:
      - assets/images/mainLibrary.png
      - assets/images/mainManual.png
      - assets/images/grass.png
+     - assets/images/grass1.png
      - assets/images/caution.png
      - assets/images/mobile.png
      - assets/images/leaf1.png
@@ -180,7 +181,7 @@ flutter:
      - assets/gif/step2.jpg
      - assets/gif/step3.gif
      - assets/gif/step4.gif
-     - assets/gif/step5.gif
+     - assets/gif/step5.png
      - assets/images/firstaidImg/minor.JPG
      - assets/images/firstaidImg/derma.JPG
      - assets/images/firstaidImg/major.JPG

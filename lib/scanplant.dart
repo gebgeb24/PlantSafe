@@ -43,7 +43,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     "Pothos",
     "Stinging Nettle",
     "Invalid",
-    "Non-Irritant",
+    "Unidentified Plant",
   ];
 
   // Map to hold details for each plant
@@ -57,9 +57,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Ranunculus",
       "species": "bulbosus",
       "family": "Ranunculaceae",
-      "img1" : "assets/images/library/1SN.png",
-      "img2" : "assets/images/library/2SN.png",
-      "img3" : "assets/images/library/3SN.png",
+      "img1" : "assets/images/library/5BC.png",
+      "img2" : "assets/images/library/2BC.png",
+      "img3" : "assets/images/library/3BC.png",
     },
     "Clematis": {
       "scientificName": "Clematis recta",
@@ -70,6 +70,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Clematis",
       "species": "recta",
       "family": "Ranunculaceae",
+      "img1" : "assets/images/library/4CL.png",
+      "img2" : "assets/images/library/2CL.png",
+      "img3" : "assets/images/library/5CL.png",
     },
     "Copperleaf": {
       "scientificName": "Acalypha wilkesiana",
@@ -80,6 +83,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Acalypha",
       "species": "wilkesiana",
       "family": "Euphorbiaceae",
+      "img1" : "assets/images/library/1CP.png",
+      "img2" : "assets/images/library/2CP.png",
+      "img3" : "assets/images/library/3CP.png",
     },
     "Crinum Lily": {
       "scientificName": "Crinum asiaticum",
@@ -90,6 +96,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Crinum",
       "species": "asiaticum",
       "family": "Amaryllidaceae",
+      "img1" : "assets/images/library/1LY.png",
+      "img2" : "assets/images/library/2LY.png",
+      "img3" : "assets/images/library/3LY.png",
     },
     "Elephant's Ear": {
       "scientificName": "Colocasia esculenta",
@@ -100,6 +109,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Colocasia",
       "species": "esculenta",
       "family": "Araceae",
+      "img1" : "assets/images/library/1EP.png",
+      "img2" : "assets/images/library/2EP.png",
+      "img3" : "assets/images/library/3EP.png",
     },
     "Fishtail Palm": {
       "scientificName": "Caryota mitis",
@@ -110,6 +122,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Caryota",
       "species": "mitis",
       "family": "Arecaceae",
+      "img1" : "assets/images/library/1FT.png",
+      "img2" : "assets/images/library/2FT.png",
+      "img3" : "assets/images/library/3FT.png",
     },
     "Hydrangea": {
       "scientificName": "Hydrangea macrophylla",
@@ -120,6 +135,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Hydrangea",
       "species": "macrophylla",
       "family": "Hydrangeaceae",
+      "img1" : "assets/images/library/1HY.png",
+      "img2" : "assets/images/library/2HY.png",
+      "img3" : "assets/images/library/3HY.png",
     },
     "Iris": {
       "scientificName": "Trimezia coerulea",
@@ -130,6 +148,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Trimezia",
       "species": "coerulea",
       "family": "Iridaceae",
+      "img1" : "assets/images/library/1IR.png",
+      "img2" : "assets/images/library/2IR.png",
+      "img3" : "assets/images/library/3IR.png",
     },
     "Pothos": {
       "scientificName": "Epipremnum aureum",
@@ -140,6 +161,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Epipremnum",
       "species": "aureum",
       "family": "Araceae",
+      "img1" : "assets/images/library/1PH.png",
+      "img2" : "assets/images/library/2PH.png",
+      "img3" : "assets/images/library/3PH.png",
     },
     "Stinging Nettle": {
       "scientificName": "Urtica dioica",
@@ -150,26 +174,30 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "genus": "Urtica",
       "species": "dioica",
       "family": "Urticaceae",
+      "img1" : "assets/images/library/1SN.png",
+      "img2" : "assets/images/library/2SN.png",
+      "img3" : "assets/images/library/3SN.png",
     },
     "Invalid": {
       "scientificName": "Invalid",
       "tagalogName": "Invalid",
       "toxicityIndex": "Invalid",
-      "plantDescription": "This may be due to one or more of the following reasons:\\n- The image is not a plant.\\n- The plant is toxic but not an irritant type.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
+      "plantDescription": "This may be due to one or more of the following:\\n- The image is not a plant.\\n- The plant is toxic but not an irritant type.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
       "toxicityDescription": "Invalid",
       "genus": "Invalid",
       "species": "Invalid",
       "family": "Invalid",
+
     },
-    "Non-Irritant": {
-      "scientificName": "Non-Irritant",
-      "tagalogName": "Non-Irritant",
-      "toxicityIndex": "Non-Irritant",
-      "plantDescription": "This may be due to one or more of the following reasons:\\n- The plant is toxic but not an irritant type. \\n- The plant may not be toxic in nature.",
-      "toxicityDescription": "Non-Irritant",
-      "genus": "Non-Irritant",
-      "species": "Non-Irritant",
-      "family": "Non-Irritant",
+    "Unidentified Plant": {
+      "scientificName": "Unidentified Plant",
+      "tagalogName": "Unidentified Plant",
+      "toxicityIndex": "Unidentified Plant",
+      "plantDescription": "This may be due to the following: \\n- The plant may not be toxic in nature. \\n- The plant is toxic but not an irritant type.",
+      "toxicityDescription": "Unidentified Plant",
+      "genus": "Unidentified Plant",
+      "species": "Unidentified Plant",
+      "family": "Unidentified Plant",
     },
   };
 
@@ -231,38 +259,60 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     });
   }
 
+
+  List<String> _imagePaths = [];
+
+  Future<void> fetchImagePaths(String plantName) async {
+    if (plantDetails.containsKey(plantName)) {
+      final plant = plantDetails[plantName]!;
+      _imagePaths = [
+        plant["img1"] ?? '',
+        plant["img2"] ?? '',
+        plant["img3"] ?? '',
+      ];
+    } else {
+      _imagePaths = [];
+    }
+  }
+
+
+
   Future<void> _speak() async {
-    if (_result.contains('Invalid')) {
-      await _flutterTts.speak(
-          "The image is invaughlid. This may be due to one or more of the following reasons: The image is not a plant. The photo has low visibility or insufficient light. The picture is not clear or is improperly taken."
-      );
-      return;
-    }
-
-    else if (_result.contains('Non-Irritant')) {
-      await _flutterTts.speak(
-          "The plant is classified as non-irritant. This may be due to one or more of the following reasons: The plant is toxic but not an irritant type, or the plant may not be toxic in nature."
-      );
-      return;
-    }
-
-
     if (_isSpeaking) {
       await _pause();
+      return;
     } else if (_isPaused) {
       await _resume();
-    } else {
-      await _prepareSpeechText();
-      await _flutterTts.speak(_speechText);
+      return;
     }
+
+    // Prepare speech text for all cases
+    await _prepareSpeechText();
+
+    // Speak the prepared text
+    await _flutterTts.speak(_speechText);
   }
 
   Future<void> _prepareSpeechText() async {
     if (_result.isEmpty) return;
 
+    if (_result.contains('Invalid')) {
+      _speechText = "The image is invalid. This may be due to one or more of the following: "
+          "The image is not a plant. The photo has low visibility or insufficient light. "
+          "The picture is not clear or is improperly taken.";
+      return;
+    }
+
+    if (_result.contains('Unidentified Plant')) {
+      _speechText = "The plant is classified as Unidentified. This may be due to the following: "
+          "The plant may not be toxic in nature, or The plant is toxic but not an irritant type.";
+      return;
+    }
+
+    // Regular plant description handling
     List<String> resultLines = _result.split('\n');
     String plantName = resultLines[0].replaceFirst('Predicted class: ', '').trim();
-    String accuracy = resultLines[1].replaceFirst('Accuracy: ', '').replaceAll('%', '').trim();
+    String accuracy = resultLines[1].replaceFirst('Probability: ', '').replaceAll('%', '').trim();
     String scientificName = resultLines[2].trim();
     String tagalogName = resultLines[3].trim();
     String genus = resultLines[4].trim();
@@ -273,7 +323,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     String toxicityDescription = resultLines.sublist(9).join(' ').trim();
 
     _speechText = """
-    The plant is identified as $plantName with an accuracy of $accuracy percent. 
+    The plant is identified as $plantName with a probability of $accuracy percent. 
     Its toxicity index is $toxicityIndex. $toxicityDescription. 
     $plantName, scientifically known as $scientificName. 
     In the Philippines, it is referred to as $tagalogName. 
@@ -455,7 +505,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       }
 
 
-      setState(() {
+      setState(() async {
         List<double> outputValues = output[0].cast<double>();
         double confidenceScore = outputValues.reduce((a, b) => a > b ? a : b);
         int predictedClassIndex = confidenceScore >= 0.8
@@ -465,7 +515,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
         String predictedClassName = classNames[predictedClassIndex];
 
         // Logic to check "Non-Irritant" class (index 11)
-        if (predictedClassName == "Non-Irritant" && confidenceScore < 0.9) {
+        if (predictedClassName == "Unidentified Plant" && confidenceScore < 0.9) {
           predictedClassName = "Invalid";  // Mark as invalid if "Non-Irritant" has low confidence
           confidenceScore = 0.0;  // Set confidence to 0 since it's invalid
         }
@@ -476,13 +526,14 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
         }
 
         // Check for green shades in the image if predicted class is "Non-Irritant"
-        if (predictedClassName == "Non-Irritant") {
+        if (predictedClassName == "Unidentified Plant") {
           bool hasGreenShades = checkForGreenShades(image); // Call the function to check for green tones
           if (!hasGreenShades) {
             predictedClassName = "Invalid"; // Mark as invalid if no green shades
             confidenceScore = 0.0; // Set confidence to 0
           }
         }
+        await fetchImagePaths(predictedClassName);
 
         var details = predictedClassName != "Invalid"
             ? plantDetails[predictedClassName]
@@ -490,14 +541,14 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
           "scientificName": "Invalid",
           "tagalogName": "Invalid",
           "toxicityIndex": "Invalid",
-          "plantDescription": "This may be due to one or more of the following reasons:\\n- The image is not a plant.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
+          "plantDescription": "This may be due to one or more of the following:\\n- The image is not a plant.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
           "toxicityDescription": "Invalid",
           "genus": "Invalid",
           "species": "Invalid",
           "family": "Invalid",
         };
 
-        print('Accuracy: ${confidenceScore * 100}%');
+        print('Probability: ${confidenceScore * 100}%');
         print('Predicted Class: $predictedClassName');
         print('ClassNames length: ${classNames.length}');
         print('PredictedClassIndex: $predictedClassIndex');
@@ -513,7 +564,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
         }
 
         _result +=
-        'Accuracy: ${(confidenceScore * 100).round()}%\n'
+        'Probability: ${(confidenceScore * 100).round()}%\n'
             '${details?["scientificName"]}\n'
             '${details?["tagalogName"]}\n'
             '${details?["genus"]}\n'
@@ -524,7 +575,9 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
             '${details?["toxicityDescription"]}\n';
 
         _isLoading = false;
+
       });
+
 
 
 
@@ -591,7 +644,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   const SizedBox(height: 5),
                 ],
 
-                if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
                   Text(
                     _result.split('\n').isNotEmpty &&
                         _result.split('\n')[0].length > 15
@@ -623,7 +676,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                 Container(
                   width: boxWidth,
                   decoration: BoxDecoration(
-                    color: _result.contains('Invalid') || _result.contains("Non-Irritant")
+                    color: _result.contains('Invalid') || _result.contains("Unidentified Plant")
                         ? const Color(0xFF363636)
                         : Colors.red,
                     borderRadius: BorderRadius.circular(10),
@@ -638,12 +691,12 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   padding: const EdgeInsets.all(10.0),
                   child: Text(
                     _result.contains('Invalid') ? 'INVALID' :
-                    _result.contains("Non-Irritant") ? 'NON-IRRITANT' :
+                    _result.contains("Unidentified Plant") ? 'UNIDENTIFIED PLANT' :
                     'IRRITANT',
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 30,
+                      fontSize: 25,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -651,7 +704,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
 
                 const SizedBox(height: 10),
 
-                if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
                   Container(
                     width: boxWidth,
                     padding: const EdgeInsets.all(20),
@@ -778,12 +831,70 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: _imagePaths.map((path) {
+                            return GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => Dialog(
+                                    backgroundColor: Colors.black.withOpacity(0.8),
+                                    insetPadding: const EdgeInsets.all(16),
+                                    child: InteractiveViewer(
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.asset(
+                                          path,
+                                          fit: BoxFit.contain,
+                                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 120),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.black26,
+                                        blurRadius: 6,
+                                        offset: Offset(0, 3),
+                                      ),
+                                    ],
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.asset(
+                                      path,
+                                      height: 100,
+                                      width: 90,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, size: 90),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+
+
+
+
                       Center(
                         child: Text(
                           _result.contains('Invalid')
-                              ? 'The image is invalid.'
-                              : _result.contains("Non-Irritant")
-                              ? 'Image is non-irritant.'
+                              ? 'The image is invalid'
+                              : _result.contains("Unidentified Plant")
+                              ? 'The plant is unidentified'
                               : _result.split('\n').isNotEmpty &&
                               _result.split('\n')[0].length > 15
                               ? _result
@@ -803,7 +914,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                       const SizedBox(height: 16),
 
 
-                      if (_result.contains('Invalid') || _result.contains("Non-Irritant")) ...[
+                      if (_result.contains('Invalid') || _result.contains("Unidentified Plant")) ...[
                         Container(
                           decoration: BoxDecoration(
                             color: const Color(0xFFF0F4F0),
@@ -821,7 +932,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             ),
                           ),
                         ),
-                      ] else if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
+                      ] else if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
                         RichText(
                           text: TextSpan(
                             style: const TextStyle(fontSize: 18, color: Colors.black),
@@ -925,7 +1036,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                 ),
 
 
-                if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: ElevatedButton(
@@ -933,10 +1044,12 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                         _flutterTts.stop();
                         String predictedClass = _result.isEmpty
                             ? ''
-                            : _result.split('\n').isNotEmpty && _result.split('\n')[0].length > 15
-                            ? _result.split('\n')[0].substring(
-                          _result.split('\n')[0].indexOf(':') + 1,
-                        ).trim()
+                            : _result.split('\n').isNotEmpty &&
+                            _result.split('\n')[0].length > 15
+                            ? _result
+                            .split('\n')[0]
+                            .substring(_result.split('\n')[0].indexOf(':') + 1)
+                            .trim()
                             : '';
                         String toxicityIndex = _result.split('\n').length > 3
                             ? _result.split('\n')[7].trim()
@@ -944,16 +1057,17 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => FirstAid(predictedClass: predictedClass, toxicityIndex: toxicityIndex,),
+                            builder: (context) => FirstAid(
+                              predictedClass: predictedClass,
+                              toxicityIndex: toxicityIndex,
+                            ),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4fae53),
                         minimumSize: Size(boxWidth, 60),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 16.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                           side: const BorderSide(
@@ -962,17 +1076,25 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                           ),
                         ),
                       ),
-                      child: const Text(
-                        'First Aid Guide',
-                        style: TextStyle(
-                          color: Color(0xFF08411c),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 35,
-                        ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.medical_services, color: Color(0xFF08411c), size: 35),
+                          SizedBox(width: 10),
+                          Text(
+                            'First Aid Guide',
+                            style: TextStyle(
+                              color: Color(0xFF08411c),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 33,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
+
               ],
             ),
           ),

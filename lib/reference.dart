@@ -98,12 +98,12 @@ class _ReferenceScreenState extends State<ReferenceScreen> {
   // Widget to create a boxed section for reference categories
   Widget _buildBoxedSection({required String title, required List<List<String>> items, String? libraryLink}) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.green.shade700, width: 2),
+        borderRadius: BorderRadius.circular(15),
+
         boxShadow: [
           BoxShadow(
             color: Colors.green.withOpacity(0.1),

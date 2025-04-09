@@ -127,7 +127,7 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
     });
   }
 
-  FlutterTts _flutterTts = FlutterTts(); // Initialize FlutterTts
+  final FlutterTts _flutterTts = FlutterTts(); // Initialize FlutterTts
 
   bool _isSpeaking = false;
   bool _isPaused = false;
@@ -157,8 +157,6 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
     $plantName is commonly found in $location.
     ''';
   }
-
-
 
   // Play or Resume TTS
   Future<void> _speak() async {
@@ -276,37 +274,57 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
     });
   }
 
-  // This function builds the box displaying the toxicity index
   Widget buildToxicityIndexBox(double width) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       width: width * 0.9,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: const Color(0xFF990000), width: 3.0),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.red.withOpacity(0.1),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.red,
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.red.withOpacity(0.1),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
-            child: const Text(
-              'Toxicity Index',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.warning_amber_outlined, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  'Toxicity Index',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Text(
             '${widget.plant['toxicityIndex'] ?? 'Not Available'}', // Default value if null
             textAlign: TextAlign.center,
@@ -316,14 +334,14 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(color: const Color(0xFF990000), width: 2.0),
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
               '${widget.plant['toxicityDescription'] ?? 'No description available'}', // Default value if null
@@ -338,6 +356,7 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -535,60 +554,91 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
                   :Center(
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.9, // Set width to 90% of the screen width
-                      padding: const EdgeInsets.all(15.0),
+                      padding: const EdgeInsets.all(20.0), // Increased padding for better spacing
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3b3b3b), // Background color
-                        borderRadius: BorderRadius.circular(10), // Outer Border radius
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF3b3b3b), Color(0xFF222222)], // Dark gradient for background
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(15), // Slightly rounder corners
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3), // Subtle shadow for depth
+                            offset: const Offset(0, 4),
+                            blurRadius: 8,
+                          ),
+                        ],
                       ),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start, // Align text to the left
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Inner box with its own border, extending to the full width of the parent container
+                          // Inner box with its own border
                           Container(
-                            width: double.infinity, // Make the inner container take the full width
-                            padding: const EdgeInsets.all(15.0),
+                            width: double.infinity, // Make the inner container take full width
+                            padding: const EdgeInsets.all(20.0), // Padding for better spacing inside
                             decoration: BoxDecoration(
                               color: Colors.white,
                               border: Border.all(
-                                color: const Color(0xFF08411c), // Border color for inner box
-                                width: 2.0, // Border width for inner box
+                                color: const Color(0xFF08411c), // Border color for the inner box
+                                width: 2.0,
                               ),
-                              borderRadius: BorderRadius.circular(5), // Border radius for inner box
+                              borderRadius: BorderRadius.circular(12), // More rounded corners for inner box
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1), // Light shadow for depth
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 6,
+                                ),
+                              ],
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Iterate over the locations and display them with numbers
-                                ...widget.plant['location']
-                                    .asMap()
-                                    .map((index, location) {
+                                ...widget.plant['location'].asMap().map((index, location) {
                                   return MapEntry(
                                     index,
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 0.5), // Reduced space between each location
-                                      child: Text(
-                                        "${index + 1}. ${location['name']}", // Add numbering before location
-                                        style: const TextStyle(
-                                          color: Colors.black, // Text color to match the border
-                                          fontSize: 18.0, // Smaller font size for compression
-                                        ),
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0), // Increased vertical spacing
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "${index + 1}. ",
+                                            style: const TextStyle(
+                                              color: Color(0xFF08411c), // Color for numbering
+                                              fontSize: 20.0, // Slightly larger font for numbering
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              location['name'],
+                                              style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 18.0,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   );
-                                })
-                                    .values
-                                    .toList(),
+                                }).values.toList(),
                               ],
                             ),
                           ),
+
+                          const SizedBox(height: 15), // Increased space between the box and the message
+
                           // Place the "Connect to internet" message outside of the box and center it
-                          const SizedBox(height: 10), // Reduced space between the box and the message
-                          const Center( // Center the message
+                          const Center(
                             child: Text(
                               "Connect to internet to view map",
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18.0,
+                                fontSize: 20.0, // Larger font size for better visibility
                                 fontWeight: FontWeight.bold,
                               ),
                               textAlign: TextAlign.center, // Center-align the message text
@@ -598,6 +648,7 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
                       ),
                     ),
                   ),
+
 
 
                   const SizedBox(height: 20),
@@ -645,38 +696,64 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
   // This function builds the description box
   Widget _buildDescriptionBox(double width) {
     return Container(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(15.0),
       width: width - 50,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: const Color(0xFF08411c), width: 3.0),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green.withOpacity(0.1),
+            blurRadius: 8,
+            spreadRadius: 2,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             width: width * 0.9,
             decoration: BoxDecoration(
               color: const Color(0xFF4FAE50),
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.green.withOpacity(0.3),
+                  blurRadius: 6,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
-            child: Text(
-              widget.plant['scientificName']!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic,),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.eco, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text(
+                  widget.plant['scientificName']!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Text(
             'Also known as "${widget.plant['tagalogName']}"',
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 18, color: Colors.grey, fontStyle: FontStyle.italic),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           Container(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(15.0),
             width: width - 50,
             decoration: BoxDecoration(
               color: Colors.white,
@@ -693,5 +770,6 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
       ),
     );
   }
+
 }
 

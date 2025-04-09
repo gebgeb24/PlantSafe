@@ -257,44 +257,52 @@ class _LibraryScreenState extends State<LibraryScreen> {
         ),
         centerTitle: true,
       ),
+
       body: Container(
         color: const Color(0xFFe9ffc8), // Light grey background
         padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Caution Box (as previously designed)
             Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
-                color: const Color(0xFFFAF393),
-                borderRadius: BorderRadius.circular(10),
-
+                color: const Color(0xFFFFB300),
+                borderRadius: BorderRadius.circular(15),
                 border: Border.all(
-                  color: const Color(0xFFfcbe37), // Darker border for caution effect
-                  width: 3,
+                  color: const Color(0xFFFFB300),
+                  width: 4,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 2,
+                    blurRadius: 6,
+                  ),
+                ],
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'assets/images/caution.png',
-                    width: 30,
-                    height: 30,
+                  Icon(
+                    Icons.warning_amber_outlined,
+                    color: Colors.white,  // Icon color to match the caution theme
+                    size: 35,
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'Beware of these plants',
+                  SizedBox(width: 15),
+                  Text(
+                    'Beware of these plants!',
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFFfcbe37),
+                      color: Colors.white,
+                      letterSpacing: 1.2,
                     ),
                   ),
                 ],
               ),
             ),
+
             const SizedBox(height: 20),
 
             // Search Bar
@@ -306,7 +314,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
                     blurRadius: 8,
-                    offset: Offset(0, 3),
+                    offset: const Offset(0, 3),
                   ),
                 ],
               ),

@@ -183,7 +183,6 @@ class _FirstAidState extends State<FirstAid> {
     speechBuffer.write("Toxicity Index: ${widget.toxicityIndex}. ");
 
     for (var details in matchedToxicityDetails) {
-      speechBuffer.write("Toxicity Level: ${details['level']}. ");
       speechBuffer.write("Description: ${details['description']}. ");
       speechBuffer.write("Symptoms: ${details['symptoms']}. ");
       speechBuffer.write("First Aid Guide: ");
@@ -335,7 +334,7 @@ class _FirstAidState extends State<FirstAid> {
                         children: [
                           const Center(
                             child: Text(
-                              'Toxicity Level:',
+                              'Toxicity Index:',
                               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -422,7 +421,6 @@ class _FirstAidState extends State<FirstAid> {
                   ),
                 ],
 
-                // Emergency button at the bottom
                 Container(
                   width: double.infinity,
                   decoration: BoxDecoration(
@@ -435,17 +433,32 @@ class _FirstAidState extends State<FirstAid> {
                   ),
                   child: TextButton(
                     onPressed: _callEmergency,
-                    child: const Text(
-                      'Call Emergency',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 35,
-                      ),
-                      textAlign: TextAlign.center,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0), // Add vertical padding
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.local_phone,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          'Call Emergency',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 33,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
+
+
               ],
             ),
           ),
