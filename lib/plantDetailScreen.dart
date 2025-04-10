@@ -276,85 +276,137 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
 
   Widget buildToxicityIndexBox(double width) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+      padding: const EdgeInsets.all(20.0),
       width: width * 0.9,
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: const Color(0xFF990000), width: 3.0),
-        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: const Color(0xFFB71C1C), width: 1.5),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.red.withOpacity(0.1),
-            blurRadius: 8,
+            color: const Color(0xFFB71C1C).withOpacity(0.15),
+            blurRadius: 12,
             spreadRadius: 2,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header with warning title
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(10),
+              gradient: const LinearGradient(
+                colors: [Color(0xFFB71C1C), Color(0xFFE53935)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.red.withOpacity(0.1),
+                  color: const Color(0xFFB71C1C).withOpacity(0.2),
                   blurRadius: 8,
-                  spreadRadius: 2,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.warning_amber_outlined, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Text(
-                  'Toxicity Index',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+        child: const Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min, // Ensures the Row only takes up necessary space
+            children: [
+              Icon(Icons.warning_amber_outlined, color: Colors.white, size: 24),
+              SizedBox(width: 12),
+              Text(
+                'Toxicity Index',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            '${widget.plant['toxicityIndex'] ?? 'Not Available'}', // Default value if null
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: const Color(0xFF990000), width: 2.0),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              '${widget.plant['toxicityDescription'] ?? 'No description available'}', // Default value if null
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.red,
+        )
+      ),
+
+
+          const SizedBox(height: 20),
+
+          // Toxicity index display
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF3F3),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: const Color(0xFFFFCDD2), width: 1),
+              ),
+              child: Text(
+                '${widget.plant['toxicityIndex'] ?? 'Not Available'}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Color(0xFFB71C1C),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Description with subtle background
+          Container(
+            padding: const EdgeInsets.all(18.0),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: const Color(0xFFFAFAFA),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 6,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              '${widget.plant['toxicityDescription'] ?? 'No description available'}',
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF424242),
+                height: 1.5,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Footer with hazard symbols
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.dangerous, color: const Color(0xFFE53935).withOpacity(0.3), size: 16),
+              const SizedBox(width: 8),
+              Icon(Icons.warning_amber, color: const Color(0xFFE53935).withOpacity(0.5), size: 18),
+              const SizedBox(width: 8),
+              Icon(Icons.health_and_safety, color: const Color(0xFFE53935).withOpacity(0.7), size: 20),
+              const SizedBox(width: 8),
+              Icon(Icons.warning_amber, color: const Color(0xFFE53935).withOpacity(0.5), size: 18),
+              const SizedBox(width: 8),
+              Icon(Icons.dangerous, color: const Color(0xFFE53935).withOpacity(0.3), size: 16),
+            ],
           ),
         ],
       ),
     );
+
   }
 
 
@@ -362,7 +414,7 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    // Get the plant data from the list (assuming widget.plant is a map from your list)
+    // Get the plant data from the list
     var plant = widget.plant;
 
     // Get the location data (latitude, longitude) for the plant
@@ -693,82 +745,140 @@ class _PlantDetailScreenState extends State<plantDetailScreen> {
 
   }
 
-  // This function builds the description box
+  // This function builds the description box with improved aesthetics
   Widget _buildDescriptionBox(double width) {
     return Container(
-      padding: const EdgeInsets.all(15.0),
-      width: width - 50,
+      padding: const EdgeInsets.all(20.0),
+      width: width - 40,
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: const Color(0xFF08411c), width: 3.0),
-        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: const Color(0xFF1A5D1A), width: 1.5),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withOpacity(0.1),
-            blurRadius: 8,
+            color: const Color(0xFF1A5D1A).withOpacity(0.15),
+            blurRadius: 12,
             spreadRadius: 2,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header with scientific name
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            width: width * 0.9,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            width: double.infinity,
             decoration: BoxDecoration(
-              color: const Color(0xFF4FAE50),
-              borderRadius: BorderRadius.circular(10),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF1A5D1A), Color(0xFF4FAE50)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.green.withOpacity(0.3),
-                  blurRadius: 6,
-                  spreadRadius: 2,
+                  color: const Color(0xFF1A5D1A).withOpacity(0.2),
+                  blurRadius: 8,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.eco, color: Colors.white, size: 20),
-                SizedBox(width: 8),
-                Text(
-                  widget.plant['scientificName']!,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic,
+                const Icon(Icons.eco, color: Colors.white, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    widget.plant['scientificName']!,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontStyle: FontStyle.italic,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          Text(
-            'Also known as "${widget.plant['tagalogName']}"',
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 18, color: Colors.grey, fontStyle: FontStyle.italic),
+
+          const SizedBox(height: 16),
+
+          // Tagalog name with subtle divider
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F8E9),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: const Color(0xFFAED581), width: 1),
+              ),
+              child: Text(
+                'Also known as "${widget.plant['tagalogName']}"',
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF558B2F),
+                  fontWeight: FontWeight.w500,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
           ),
-          const SizedBox(height: 10),
+
+          const SizedBox(height: 20),
+
+          // Description with subtle background
           Container(
-            padding: const EdgeInsets.all(15.0),
-            width: width - 50,
+            padding: const EdgeInsets.all(18.0),
+            width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: const Color(0xFF08411c), width: 2.0),
-              borderRadius: BorderRadius.circular(10),
+              color: const Color(0xFFF9FBF9),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 6,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Text(
               widget.plant['description1']!,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18),
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF333333),
+                height: 1.5,
+                letterSpacing: 0.3,
+              ),
             ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Footer with leaf icons as decorative elements
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.eco, color: const Color(0xFF4FAE50).withOpacity(0.3), size: 16),
+              const SizedBox(width: 8),
+              Icon(Icons.eco, color: const Color(0xFF4FAE50).withOpacity(0.5), size: 18),
+              const SizedBox(width: 8),
+              Icon(Icons.eco, color: const Color(0xFF4FAE50).withOpacity(0.7), size: 20),
+              const SizedBox(width: 8),
+              Icon(Icons.eco, color: const Color(0xFF4FAE50).withOpacity(0.5), size: 18),
+              const SizedBox(width: 8),
+              Icon(Icons.eco, color: const Color(0xFF4FAE50).withOpacity(0.3), size: 16),
+            ],
           ),
         ],
       ),
     );
+
   }
 
 }

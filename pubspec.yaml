@@ -49,6 +49,7 @@ dependencies:
   location: ^7.0.1
   connectivity_plus: ^6.1.0
   flutter_tts: ^4.2.1
+  google_fonts: ^6.2.1
 
 
 
@@ -87,7 +88,6 @@ flutter:
      - assets/images/logo.jpg
      - assets/images/logo.png
      - assets/images/buttercup.JPG
-     - assets/model/model.tflite
      - assets/model/modelnewnontoxic.tflite
      - assets/images/trivia/buttercup.jpg
      - assets/images/trivia/clematis.jpg

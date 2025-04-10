@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'plantDetailScreen.dart'; // Import the new screen
+import 'dart:ui';
+import 'plantDetailScreen.dart';
 
 class LibraryScreen extends StatefulWidget {
   const LibraryScreen({super.key});
@@ -8,8 +9,9 @@ class LibraryScreen extends StatefulWidget {
   _LibraryScreenState createState() => _LibraryScreenState();
 }
 
-class _LibraryScreenState extends State<LibraryScreen> {
+class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProviderStateMixin {
   final List<Map<String, dynamic>> plants = [
+    // All the existing plant data remains the same
     {
       'itemNum': '1',
       'image1': 'assets/images/library/3BC.png',
@@ -221,272 +223,565 @@ class _LibraryScreenState extends State<LibraryScreen> {
         {"latitude": 7.5231, "longitude": 122.3108, "name": "Zamboanga Sibugay"},
       ]
     },
-
-    // Add more plants here
   ];
 
   String searchQuery = '';
+  String selectedCategory = 'All Plants';
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  final _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _scrollController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _clearSearch() {
+    setState(() {
+      searchQuery = '';
+      _searchController.clear();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
 
-    // Filter the plants list based on the search query
+    // Filter the plants list based on the search query and selected category
     final filteredPlants = plants.where((plant) {
-      final query = searchQuery.toLowerCase();
-      return plant['plantName']!.toLowerCase().contains(query) ||
-          plant['scientificName']!.toLowerCase().contains(query) ||
-          plant['tagalogName']!.toLowerCase().contains(query);
+      // Filter by search query
+      final matchesSearch = plant['plantName']!.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          plant['scientificName']!.toLowerCase().contains(searchQuery.toLowerCase()) ||
+          plant['tagalogName']!.toLowerCase().contains(searchQuery.toLowerCase());
+
+      // Filter by selected category
+      final matchesCategory = selectedCategory == 'All Plants' ||
+          (selectedCategory == 'Minor Toxicity' && plant['toxicityIndex']!.contains('Minor')) ||
+          (selectedCategory == 'Major Toxicity' && plant['toxicityIndex']!.contains('Major')) ||
+          (selectedCategory == 'Oxalates' && plant['toxicityIndex']!.contains('Oxalates')) ||
+          (selectedCategory == 'Dermatitis' &&
+              (plant['toxicityIndex']!.contains('Dermatitis') ||
+                  plant['toxicityIndex'] == 'Dermatitis'));
+
+      return matchesSearch && matchesCategory;
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Library',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: const Color(0xFF4FAE50),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        centerTitle: true,
-      ),
-
       body: Container(
-        color: const Color(0xFFe9ffc8), // Light grey background
-        padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(15),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFB300),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                  color: const Color(0xFFFFB300),
-                  width: 4,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 2,
-                    blurRadius: 6,
-                  ),
-                ],
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.warning_amber_outlined,
-                    color: Colors.white,  // Icon color to match the caution theme
-                    size: 35,
-                  ),
-                  SizedBox(width: 15),
-                  Text(
-                    'Beware of these plants!',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Search Bar
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: TextField(
-                onChanged: (value) {
-                  setState(() {
-                    searchQuery = value;
-                  });
-                },
-                decoration: const InputDecoration(
-                  hintText: 'Search for plants...',
-                  hintStyle: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey,
-                  ),
-                  border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search),
-                  contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 15),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Display results or no results found
-            if (filteredPlants.isEmpty)
-              const Expanded(
-                child: Center(
-                  child: Text(
-                    'No plants found.',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              )
-            else
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredPlants.length,
-                  itemBuilder: (context, index) {
-                    final plant = filteredPlants[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => plantDetailScreen(plant: plant),
+        decoration: BoxDecoration(
+          color: const Color(0xFF4FAE50), // Background color for the entire container
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Animated App Bar with back button
+              // Animated App Bar with back button
+              SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, -1),
+                  end: Offset.zero,
+                ).animate(_animation),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start, // Align start for back button
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8), // Adds padding around the icon
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF4FAE50), // Your background color for the circle
+                            shape: BoxShape.circle, // Makes the container circular
                           ),
-                        );
-                      },
-                      onLongPress: () {
-                        // Show the preview when the user long-presses a card
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(10),
-                                  child: Image.asset(
-                                    plant['image1']!,
-                                    width: screenWidth * 0.95, // Increase image width
-                                    height: 300, // Larger image height
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                const SizedBox(height: 15),
-                                Text(
-                                  plant['plantName']!,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  'Scientific Name: ${plant['scientificName']}',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  'Tagalog Name: ${plant['tagalogName']}',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                      onLongPressUp: () {
-                        // Close the preview dialog when the long press is released
-                        Navigator.of(context).pop();
-                      },
-                      child: Card(
-                        margin: const EdgeInsets.symmetric(vertical: 12.0),
-                        elevation: 4.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        color: Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Row(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.asset(
-                                  plant['image1']!,
-                                  width: 120,
-                                  height: 120,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 15),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      plant['plantName']!,
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      plant['scientificName']!,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Also known as ${plant['tagalogName']}',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          child: const Icon(
+                            Icons.arrow_back_ios_rounded,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
                       ),
-                    );
-                  },
+                      // Center the text with a Spacer widget
+                      const Spacer(), // This will push the text to the center
+                      const Text(
+                        'Library',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const Spacer(), // This will also balance out the space after the text
+                    ],
+                  ),
                 ),
               ),
-          ],
+
+
+
+
+
+
+              // Main Content
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(30),
+                    topRight: Radius.circular(30),
+                  ),
+                  child: Container(
+                    color: Colors.white,
+                    child: FadeTransition(
+                      opacity: _animation,
+                      child: Column(
+                        children: [
+                          // Warning Banner
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 30, 20, 10),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFFF9500), Color(0xFFFFB700)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(18),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFFF9500).withOpacity(0.3),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.3),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.warning_amber_rounded,
+                                      color: Colors.white,
+                                      size: 28,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15),
+                                  const Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Caution!',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          'Plants in this library may be harmful if touched or ingested.',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.white,
+                                            height: 1.3,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          // Search Bar
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.5),
+                                    blurRadius: 2,
+                                    spreadRadius: 1,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: TextField(
+                                controller: _searchController,
+                                onChanged: (value) {
+                                  setState(() {
+                                    searchQuery = value;
+                                  });
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Search toxic plants...',
+                                  hintStyle: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  border: InputBorder.none,
+                                  prefixIcon: Icon(
+                                    Icons.search_rounded,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                  suffixIcon: searchQuery.isNotEmpty
+                                      ? IconButton(
+                                    icon: Icon(
+                                      Icons.clear_rounded,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                    onPressed: _clearSearch,
+                                  )
+                                      : null,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    vertical: 15,
+                                    horizontal: 20,
+                                  ),
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Plant Categories
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                            child: SizedBox(
+                              height: 40,
+                              child: ListView(
+                                scrollDirection: Axis.horizontal,
+                                children: [
+                                  _buildCategoryChip('All Plants'),
+                                  _buildCategoryChip('Minor Toxicity'),
+                                  _buildCategoryChip('Major Toxicity'),
+                                  _buildCategoryChip('Oxalates'),
+                                  _buildCategoryChip('Dermatitis'),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          // Plant Cards
+                          Expanded(
+                            child: filteredPlants.isEmpty
+                                ? LayoutBuilder(
+                              builder: (context, constraints) {
+                                return SingleChildScrollView(
+                                  padding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                                  ),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                                    child: IntrinsicHeight(
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.search_off_rounded,
+                                              size: 80,
+                                              color: Colors.grey.shade400,
+                                            ),
+                                            const SizedBox(height: 16),
+                                            Text(
+                                              'No plants found',
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Text(
+                                              'Try adjusting your search',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.grey.shade500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                                : ListView.builder(
+                              controller: _scrollController,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              itemCount: filteredPlants.length,
+                              itemBuilder: (context, index) {
+                                final plant = filteredPlants[index];
+                                return Hero(
+                                  tag: 'plant-${plant['itemNum']}',
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => plantDetailScreen(plant: plant),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.only(bottom: 16),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFE6E6E6)
+                                        ,
+                                        borderRadius: BorderRadius.circular(20),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(0.05),
+                                            blurRadius: 10,
+                                            spreadRadius: 1,
+                                            offset: const Offset(0, 2),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          // Plant Image
+                                          ClipRRect(
+                                            borderRadius: const BorderRadius.only(
+                                              topLeft: Radius.circular(20),
+                                              bottomLeft: Radius.circular(20),
+                                            ),
+                                            child: Container(
+                                              width: 130,
+                                              height: 170,
+                                              decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: AssetImage(plant['image1']!),
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+
+                                            ),
+                                          ),
+
+                                          // Plant Info
+                                          Expanded(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(16),
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    plant['plantName']!,
+                                                    style: const TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Color(0xFF2E5729),
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    plant['scientificName']!,
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontStyle: FontStyle.italic,
+                                                      color: Colors.grey.shade700,
+                                                    ),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Row(
+                                                    children: [
+                                                      Text(
+                                                        plant['tagalogName']!,
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.grey.shade600,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow.ellipsis,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  const SizedBox(height: 8),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 4,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: _getToxicityColor(plant['toxicityIndex']).withOpacity(0.1),
+                                                      borderRadius: BorderRadius.circular(30),
+                                                    ),
+                                                    child: Text(
+                                                      plant['toxicityIndex']!,
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: _getToxicityColor(plant['toxicityIndex']),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
+  Widget _buildCategoryChip(String label) {
+    bool isSelected = selectedCategory == label;
+    return Container(
+      margin: const EdgeInsets.only(right: 12),
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            selectedCategory = label;
+          });
+        },
+        borderRadius: BorderRadius.circular(30),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFF3BB44A) : Colors.white,
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: isSelected ? const Color(0xFF3BB44A) : Colors.grey.shade300,
+              width: 1,
+            ),
+            boxShadow: isSelected
+                ? [
+              BoxShadow(
+                color: const Color(0xFF3BB44A).withOpacity(0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ]
+                : null,
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+              color: isSelected ? Colors.white : Colors.grey.shade700,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
+  Color _getToxicityColor(String toxicityIndex) {
+    if (toxicityIndex.contains('Major')) {
+      return Colors.red;
+    } else if (toxicityIndex.contains('Minor')) {
+      return Colors.orange;
+    } else if (toxicityIndex.contains('Oxalates')) {
+      return Colors.purple;
+    } else {
+      return Colors.amber; // For Dermatitis
+    }
+  }
 
+  Widget _getToxicityOverlay(String toxicityIndex) {
+    Color overlayColor = _getToxicityColor(toxicityIndex);
+    IconData iconData;
 
+    if (toxicityIndex.contains('Major')) {
+      iconData = Icons.dangerous;
+    } else if (toxicityIndex.contains('Minor')) {
+      iconData = Icons.warning_amber;
+    } else if (toxicityIndex.contains('Oxalates')) {
+      iconData = Icons.science;
+    } else {
+      iconData = Icons.healing; // For Dermatitis
+    }
 
+    return Align(
+      alignment: Alignment.topLeft,
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        decoration: BoxDecoration(
+          color: overlayColor.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              iconData,
+              color: Colors.white,
+              size: 12,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              toxicityIndex.split(' & ')[0],
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

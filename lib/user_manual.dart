@@ -22,6 +22,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
       'image': 'assets/gif/step1.gif',
       'icon': Icons.camera_alt,
       'hasBullets': false,
+      'color': const Color(0xFF26A69A),
     },
     {
       'title': 'Ensure Image Quality',
@@ -29,6 +30,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
       'image': 'assets/gif/step2.jpg',
       'icon': Icons.photo_camera,
       'hasBullets': false,
+      'color': const Color(0xFF66BB6A),
     },
     {
       'title': 'View Plant Details',
@@ -36,6 +38,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
       'image': 'assets/gif/step3.gif',
       'icon': Icons.eco,
       'hasBullets': true,
+      'color': const Color(0xFF42A5F5),
     },
     {
       'title': 'First Aid Guidance',
@@ -43,6 +46,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
       'image': 'assets/gif/step4.gif',
       'icon': Icons.medical_services,
       'hasBullets': true,
+      'color': const Color(0xFFEF5350),
     },
     {
       'title': 'Emergency Calling',
@@ -50,6 +54,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
       'image': 'assets/gif/step5.png',
       'icon': Icons.emergency,
       'hasBullets': true,
+      'color': const Color(0xFFFF7043),
     },
   ];
 
@@ -81,8 +86,10 @@ class _UserManualScreenState extends State<UserManualScreen> {
       return Text(
         text,
         style: const TextStyle(
-          fontSize: 18,
-          height: 1.5,
+          fontSize: 17,
+          height: 1.6,
+          color: Color(0xFF424242),
+          letterSpacing: 0.3,
         ),
         textAlign: TextAlign.center,
       );
@@ -94,17 +101,25 @@ class _UserManualScreenState extends State<UserManualScreen> {
       children: lines.map((line) {
         if (line.startsWith('•')) {
           return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
+            padding: const EdgeInsets.symmetric(vertical: 5.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('• ', style: TextStyle(fontSize: 18)),
+                const Text('• ',
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF424242),
+                  ),
+                ),
                 Expanded(
                   child: Text(
                     line.substring(2),
                     style: const TextStyle(
-                      fontSize: 18,
-                      height: 1.5,
+                      fontSize: 17,
+                      height: 1.6,
+                      color: Color(0xFF424242),
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ),
@@ -113,12 +128,14 @@ class _UserManualScreenState extends State<UserManualScreen> {
           );
         }
         return Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
+          padding: const EdgeInsets.only(bottom: 10.0),
           child: Text(
             line,
             style: const TextStyle(
-              fontSize: 18,
-              height: 1.5,
+              fontSize: 17,
+              height: 1.6,
+              color: Color(0xFF424242),
+              letterSpacing: 0.3,
             ),
           ),
         );
@@ -132,254 +149,305 @@ class _UserManualScreenState extends State<UserManualScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text(
           'User Manual',
           style: TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
+            fontSize: 22,
+            letterSpacing: 0.5,
           ),
         ),
-        backgroundColor: const Color(0xFF4FAE50),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+          margin: const EdgeInsets.only(left: 12.0),
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_rounded, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
         centerTitle: true,
       ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
             colors: [
-              Color(0xFFE9FFC8),
-              Color(0xFFD1F0A8),
+              Color(0xFF43A047),
+              Color(0xFF1B5E20),
             ],
           ),
         ),
-        child: Stack(
-          children: [
-            // Main Content
-            Column(
-              children: [
-                // Progress Indicator
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      _steps.length,
-                          (index) => AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        width: _currentPage == index ? 24 : 8,
-                        height: 8,
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        decoration: BoxDecoration(
-                          color: _currentPage == index
-                              ? const Color(0xFF4FAE50)
-                              : Colors.grey.withOpacity(0.5),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+        child: SafeArea(
+          child: Stack(
+            children: [
+              // Page View
+              PageView.builder(
+                controller: _pageController,
+                itemCount: _steps.length,
+                onPageChanged: (index) {
+                  setState(() => _currentPage = index);
+                  if (_indicatorTimer != null) {
+                    _indicatorTimer!.cancel();
+                  }
+                  _indicatorTimer = Timer(const Duration(seconds: 8), () {
+                    if (mounted) {
+                      setState(() => _showSwipeIndicator = false);
+                    }
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final step = _steps[index];
+                  final isStep2 = index == 1;
+                  final isStep5 = index == 4;
+                  final stepColor = step['color'] as Color;
 
-                // Page View
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: _steps.length,
-                    onPageChanged: (index) {
-                      setState(() => _currentPage = index);
-                      if (_indicatorTimer != null) {
-                        _indicatorTimer!.cancel();
-                      }
-                      _indicatorTimer = Timer(const Duration(seconds: 8), () {
-                        if (mounted) {
-                          setState(() => _showSwipeIndicator = false);
-                        }
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      final step = _steps[index];
-                      final isStep2 = index == 1;
-                      final isStep5 = index == 4;// Special case for step 2
-
-
-                      return AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 500),
-                        child: Padding(
-                          key: ValueKey<int>(index),
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Card(
-                            elevation: 8,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.green.withOpacity(0.2),
-                                    blurRadius: 10,
-                                    spreadRadius: 2,
-                                    offset: const Offset(0, 4),
+                  return AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 500),
+                    child: Padding(
+                      key: ValueKey<int>(index),
+                      padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
+                      child: Column(
+                        children: [
+                          // Step indicator
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            height: 5,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _steps.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, i) {
+                                return Container(
+                                  width: (size.width - 80) / _steps.length,
+                                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                                  decoration: BoxDecoration(
+                                    color: i <= _currentPage
+                                        ? Colors.white
+                                        : Colors.white.withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                ],
+                                );
+                              },
+                            ),
+                          ),
+
+                          // Main Card
+                          Expanded(
+                            child: Card(
+                              elevation: 12,
+                              shadowColor: Colors.black.withOpacity(0.3),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(28),
                               ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  // Header with Icon
-                                  Container(
-                                    padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF4FAE50).withOpacity(0.1),
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(20),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(28),
+                                ),
+                                child: Column(
+                                  children: [
+                                    // Header with Title and Step
+                                    Container(
+                                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+                                      child: Row(
+                                        children: [
+                                          // Step Number
+                                          Container(
+                                            width: 50,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  stepColor.withOpacity(0.8),
+                                                  stepColor,
+                                                ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: stepColor.withOpacity(0.4),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '${index + 1}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 22,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 16),
+
+                                          // Title and Icon
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  step['title'],
+                                                  style: TextStyle(
+                                                    fontSize: 22,
+                                                    fontWeight: FontWeight.w700,
+                                                    color: stepColor,
+                                                    height: 1.2,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 6),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      step['icon'] as IconData? ?? Icons.help,
+                                                      size: 18,
+                                                      color: Colors.grey[600],
+                                                    ),
+                                                    const SizedBox(width: 6),
+                                                    Text(
+                                                      'Step ${index + 1} of ${_steps.length}',
+                                                      style: TextStyle(
+                                                        color: Colors.grey[600],
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(12),
-                                          decoration: BoxDecoration(
-                                            color: const Color(0xFF4FAE50),
-                                            shape: BoxShape.circle,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.green.withOpacity(0.3),
-                                                blurRadius: 8,
-                                                spreadRadius: 2,
-                                              ),
-                                            ],
-                                          ),
-                                          child: Icon(
-                                            step['icon'] as IconData? ?? Icons.help,
-                                            size: 36,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          'Step ${index + 1}: ${step['title']}',
-                                          style: theme.textTheme.headlineSmall?.copyWith(
-                                            color: const Color(0xFF2E7D32),
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
 
-                                  // Content
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    // Content
+                                    Expanded(
                                       child: SingleChildScrollView(
+                                        physics: const BouncingScrollPhysics(),
+                                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                                         child: Column(
                                           children: [
+                                            // Image
+                                            Container(
+                                              height: isStep2 ? size.height * 0.45 : isStep5 ? size.height * 0.25 : size.height * 0.3,
+                                              margin: const EdgeInsets.symmetric(vertical: 16),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(20),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black.withOpacity(0.15),
+                                                    blurRadius: 12,
+                                                    offset: const Offset(0, 5),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(20),
+                                                child: Image.asset(
+                                                  step['image']!,
+                                                  fit: BoxFit.cover,
+                                                  errorBuilder: (context, error, stackTrace) =>
+                                                      Container(
+                                                        color: Colors.grey[200],
+                                                        child: const Center(
+                                                          child: Icon(Icons.image_not_supported, size: 40, color: Colors.grey),
+                                                        ),
+                                                      ),
+                                                ),
+                                              ),
+                                            ),
+
+                                            // Description
                                             if (!isStep2 && step['description'].isNotEmpty)
-                                              Padding(
-                                                padding: const EdgeInsets.only(bottom: 20),
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                                                 child: _buildDescriptionText(
                                                   step['description'],
                                                   step['hasBullets'],
                                                 ),
                                               ),
-                                            Container(
-                                              height: isStep2 ? size.height * 0.55 : isStep5 ? size.height * 0.3 : size.height * 0.4,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(12),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: Colors.black.withOpacity(0.1),
-                                                    blurRadius: 10,
-                                                    offset: const Offset(0, 4),
-                                                  ),
-                                                ],
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius: BorderRadius.circular(12),
-                                                child: Image.asset(
-                                                  step['image']!,
-                                                  fit: BoxFit.contain,
-                                                  errorBuilder: (context, error, stackTrace) =>
-                                                  const Icon(Icons.image_not_supported, size: 10),
-                                                ),
-                                              ),
-                                            ),
+
+                                            const SizedBox(height: 24),
                                           ],
                                         ),
                                       ),
                                     ),
-                                  ),
-
-                                  // Footer
-                                  Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Text(
-                                      '${index + 1}/${_steps.length}',
-                                      style: theme.textTheme.bodyMedium?.copyWith(
-                                        color: Colors.grey,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-
-            // Swipe Indicator
-            if (_showSwipeIndicator)
-              Positioned(
-                bottom: 30,
-                left: 0,
-                right: 0,
-                child: AnimatedOpacity(
-                  opacity: _showSwipeIndicator ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 500),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.swipe,
-                        size: 40,
-                        color: Colors.grey,
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Text(
-                          'Swipe to continue',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
-          ],
+
+              // Swipe Indicator
+              if (_showSwipeIndicator)
+                Positioned(
+                  bottom: 30,
+                  left: 0,
+                  right: 0,
+                  child: AnimatedOpacity(
+                    opacity: _showSwipeIndicator ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 500),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      margin: const EdgeInsets.symmetric(horizontal: 50),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(50),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.swipe,
+                            size: 24,
+                            color: Color(0xFF43A047),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Swipe to continue',
+                            style: TextStyle(
+                              color: Colors.grey[800],
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
