@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:plant/reference.dart';
 import 'dart:async';
 import 'dart:math';
+
 
 // Import the new screens
 import 'library.dart';
@@ -163,7 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: <Widget>[
               // Logo with padding at the top
               Padding(
-                padding: const EdgeInsets.only(top: 100.0),
+                padding: const EdgeInsets.only(top: 130.0),
                 child: Image.asset(
                   'assets/images/logo.png',
                   width: screenWidth * 0.9,
@@ -171,39 +171,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(height: 10),
               // Title in front of the grass image
-              const Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Text with border
-                  Text(
-                    'Your Go-to Irritant\nToxic Plant Guide',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF284268), // Border color
-                      fontFamily: 'Roboto', // Add your desired font family
-                      shadows: [
-                        Shadow(
-                          offset: Offset(2.5, 2.5), // Adjust the shadow position for border effect
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Text(
+                      'Your Go-to Irritant\nToxic Plant Guide',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,  // Added font style (italic)
+                        fontFamily: 'Roboto', // Replace with your font
+                        color: Color(0xFF309c39), // Main text color
+                      ),
+                    ),
+                  ],
+                ),
+              )
+,
 
-                          color: Color(0xFF284268), // Border color
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Text on top
-                  Text(
-                    'Your Go-to Irritant\nToxic Plant Guide',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF309c39), // Text color
-                    ),
-                  ),
-                ],
-              ),
+
 
               const SizedBox(height: 10),
 
@@ -211,27 +204,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter, // Aligning the container to the bottom center
-                  child: Container(
+                  child: SizedBox(
                     width: double.infinity, // Full width of the screen
                     height: (MediaQuery.of(context).size.width / 2 + 30) * 2, // Dynamically calculate height based on buttons (2x2 grid)
-                    decoration: BoxDecoration(
-                      color: Colors.white
 
-
-                      , // White background
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(40), // Rounded top-left corner
-                        topRight: Radius.circular(40), // Rounded top-right corner
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.5), // Subtle shadow color
-                          blurRadius: 5, // Soft blur effect
-                          offset: const Offset(0, -1), // Shadow positioned upwards to avoid overlap
-                          spreadRadius: 3, // Shadow spread
-                        ),
-                      ],
-                    ),
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 16.0), // Adding padding to the bottom to prevent any background visibility
                       child: Stack(
@@ -330,52 +306,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 
 
-  Widget _buildButton(BuildContext context, String text, VoidCallback onPressed,
-      double width, String iconPath) {
-    const double iconSize = 70; // Adjusted icon size
-    const double textHeight = 30; // Estimated height for the text line
-    const double padding = 20; // Padding around the icon and text
-    const double iconTextSpacing = 15; // Additional space between the icon and text
+  Widget _buildButton(
+      BuildContext context,
+      String text,
+      VoidCallback onPressed,
+      double width,
+      String iconPath,
+      ) {
+    const double iconSize = 70;
+    const double textHeight = 30;
+    const double padding = 20;
+    const double iconTextSpacing = 15;
 
     return SizedBox(
       width: width,
-      height: iconSize + textHeight + padding + iconTextSpacing, // Increase height for spacing
+      height: iconSize + textHeight + padding + iconTextSpacing,
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF309c39), // Set button background color
+          backgroundColor: Colors.transparent, // Transparent because we use gradient
+          shadowColor: Colors.black.withOpacity(0.25),
+          elevation: 8,
+          padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0), // Rounded corners
+            borderRadius: BorderRadius.circular(20.0),
           ),
-          elevation: 5, // Adds shadow with a default offset and blur
-        ).copyWith(
-          shadowColor: MaterialStateProperty.all(Colors.black.withOpacity(0.9)),
         ),
-
-
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              iconPath,
-              width: iconSize, // Adjust icon size here
-              height: iconSize,
-              color: Colors.white, // Set icon color
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Colors.white, Color(0xFFe9ffc8)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            const SizedBox(height: iconTextSpacing), // Adds space between the icon and the text
-            Text(
-              text,
-              style: const TextStyle(
-                fontSize: 18, // Adjusted font size
-                fontWeight: FontWeight.bold, // Bold text
-                color: Colors.white, // Set text color to Color(0xFFe9ffc8)
-              ),
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Container(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  iconPath,
+                  width: iconSize,
+                  height: iconSize,
+                  color: const Color(0xFF309c39), // Green icon
+                ),
+                const SizedBox(height: iconTextSpacing),
+                Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF309c39), // Green text
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
+
 
 
   void _showScanOptionsDialog(BuildContext context) {
@@ -634,7 +628,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 'Cancel',
                 style: TextStyle(
                     color: Colors.red,
-                    fontSize: 18), // Optional: Highlight Cancel in red
+                    fontSize: 18),
               ),
             ),
             TextButton(

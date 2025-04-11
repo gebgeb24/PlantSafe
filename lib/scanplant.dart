@@ -43,7 +43,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     "Pothos",
     "Stinging Nettle",
     "Invalid",
-    "Unidentified Plant",
+    "Non-Irritant",
   ];
 
   // Map to hold details for each plant
@@ -189,15 +189,18 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "family": "Invalid",
 
     },
-    "Unidentified Plant": {
-      "scientificName": "Unidentified Plant",
-      "tagalogName": "Unidentified Plant",
-      "toxicityIndex": "Unidentified Plant",
-      "plantDescription": "This may be due to the following: \\n- The plant may not be toxic in nature. \\n- The plant is toxic but not an irritant type.",
-      "toxicityDescription": "Unidentified Plant",
-      "genus": "Unidentified Plant",
-      "species": "Unidentified Plant",
-      "family": "Unidentified Plant",
+    "Non-Irritant": {
+      "scientificName": "Non-Irritant",
+      "tagalogName": "Non-Irritant",
+      "toxicityIndex": "Non-Irritant",
+      "plantDescription": "The plant does not typically cause skin irritation. However, it may still possess toxic properties if ingested; therefore, consumption is not advised.",
+      "toxicityDescription": "Non-Irritant",
+      "genus": "Non-Irritant",
+      "species": "Non-Irritant",
+      "family": "Non-Irritant",
+      "img1" : "assets/images/library/1SN.png",
+      "img2" : "assets/images/library/2SN.png",
+      "img3" : "assets/images/library/3SN.png",
     },
   };
 
@@ -297,15 +300,14 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     if (_result.isEmpty) return;
 
     if (_result.contains('Invalid')) {
-      _speechText = "The image is invalid. This may be due to one or more of the following: "
+      _speechText = "The image is invaughlid. This may be due to one or more of the following: "
           "The image is not a plant. The photo has low visibility or insufficient light. "
           "The picture is not clear or is improperly taken.";
       return;
     }
 
-    if (_result.contains('Unidentified Plant')) {
-      _speechText = "The plant is classified as Unidentified. This may be due to the following: "
-          "The plant may not be toxic in nature, or The plant is toxic but not an irritant type.";
+    if (_result.contains('Non-Irritant')) {
+      _speechText = "The plant is classified as non-irritant. The plant does not typically cause skin irritation. However, it may still possess toxic properties if ingested. therefore, consumption is not advised.";
       return;
     }
 
@@ -515,7 +517,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
         String predictedClassName = classNames[predictedClassIndex];
 
         // Logic to check "Non-Irritant" class (index 11)
-        if (predictedClassName == "Unidentified Plant" && confidenceScore < 0.9) {
+        if (predictedClassName == "Non-Irritant" && confidenceScore < 0.9) {
           predictedClassName = "Invalid";  // Mark as invalid if "Non-Irritant" has low confidence
           confidenceScore = 0.0;  // Set confidence to 0 since it's invalid
         }
@@ -526,7 +528,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
         }
 
         // Check for green shades in the image if predicted class is "Non-Irritant"
-        if (predictedClassName == "Unidentified Plant") {
+        if (predictedClassName == "Non-Irritant") {
           bool hasGreenShades = checkForGreenShades(image); // Call the function to check for green tones
           if (!hasGreenShades) {
             predictedClassName = "Invalid"; // Mark as invalid if no green shades
@@ -644,7 +646,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   const SizedBox(height: 5),
                 ],
 
-                if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                   Text(
                     _result.split('\n').isNotEmpty &&
                         _result.split('\n')[0].length > 15
@@ -676,8 +678,10 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                 Container(
                   width: boxWidth,
                   decoration: BoxDecoration(
-                    color: _result.contains('Invalid') || _result.contains("Unidentified Plant")
+                    color: _result.contains('Invalid')
                         ? const Color(0xFF363636)
+                        : _result.contains("Non-Irritant")
+                        ? const Color(0xFF4FAE50)
                         : Colors.red,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: const [
@@ -688,23 +692,53 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                       ),
                     ],
                   ),
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    _result.contains('Invalid') ? 'INVALID' :
-                    _result.contains("Unidentified Plant") ? 'UNIDENTIFIED PLANT' :
-                    'IRRITANT',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
-                    ),
-                    textAlign: TextAlign.center,
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (_result.contains('Invalid'))
+                        Image.asset(
+                          'assets/images/wrong.png',
+                          height: 30,
+                          width: 30,
+                          color: Colors.white,
+                        )
+                      else if (_result.contains('Non-Irritant'))
+                        Image.asset(
+                          'assets/images/check.png',
+                          height: 30,
+                          width: 30,
+                        )
+                      else
+                        const Icon(
+                          Icons.warning_amber_rounded,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                      const SizedBox(width: 10),
+                      Text(
+                        _result.contains('Invalid')
+                            ? 'INVALID'
+                            : _result.contains("Non-Irritant")
+                            ? 'NON-IRRITANT'
+                            : 'TOXIC (IRRITANT)',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
                 ),
 
+
+
                 const SizedBox(height: 10),
 
-                if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                   Container(
                     width: boxWidth,
                     padding: const EdgeInsets.all(20),
@@ -831,7 +865,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
+                      if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: _imagePaths.map((path) {
@@ -889,12 +923,38 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
 
 
 
-                      Center(
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+
+                        decoration: BoxDecoration(
+                          color: _result.contains('Invalid')
+                              ? Color(0xFFA6A6A6)
+                              : _result.contains("Non-Irritant")
+                              ? const Color(0xFFDFF5E2)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                          border: Border.all(
+                            color: _result.contains("Invalid")
+                                ? Colors.black
+                                : _result.contains("Non-Irritant")
+                                ? const Color(0xFF4FAE50)
+                                : Colors.transparent,
+                            width: 1.5,
+                          ),
+                        ),
                         child: Text(
                           _result.contains('Invalid')
                               ? 'The image is invalid'
-                              : _result.contains("Unidentified Plant")
-                              ? 'The plant is unidentified'
+                              : _result.contains("Non-Irritant")
+                              ? 'The plant is non-irritant'
                               : _result.split('\n').isNotEmpty &&
                               _result.split('\n')[0].length > 15
                               ? _result
@@ -903,18 +963,25 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                               .trim()
                               : '',
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
-                            color: Colors.black87,
+                            color: _result.contains("Invalid")
+                                ? Colors.black
+                                : _result.contains("Non-Irritant")
+                                ? const Color(0xFF309c39)
+                                : Colors.black87,
                           ),
                         ),
                       ),
 
+
+
+
                       const SizedBox(height: 16),
 
 
-                      if (_result.contains('Invalid') || _result.contains("Unidentified Plant")) ...[
+                      if (_result.contains('Invalid') || _result.contains("Non-Irritant")) ...[
                         Container(
                           decoration: BoxDecoration(
                             color: const Color(0xFFF0F4F0),
@@ -932,7 +999,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             ),
                           ),
                         ),
-                      ] else if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
+                      ] else if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                         RichText(
                           text: TextSpan(
                             style: const TextStyle(fontSize: 18, color: Colors.black),
@@ -1036,7 +1103,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                 ),
 
 
-                if (!_result.contains('Invalid') && !_result.contains("Unidentified Plant")) ...[
+                if (!_result.contains('Invalid') && !_result.contains("Non-Irritant")) ...[
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0),
                     child: ElevatedButton(

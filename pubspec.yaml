@@ -162,6 +162,11 @@ flutter:
      - assets/images/plantlogo.png
      - assets/images/scan.png
      - assets/images/leaf.png
+     - assets/images/1leaf.png
+     - assets/images/safe.png
+     - assets/images/hold.png
+     - assets/images/wrong.png
+     - assets/images/check.png
      - assets/images/manual.png
      - assets/images/gps2.png
      - assets/images/sun.png
