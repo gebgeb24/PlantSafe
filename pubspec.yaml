@@ -167,6 +167,7 @@ flutter:
      - assets/images/hold.png
      - assets/images/wrong.png
      - assets/images/check.png
+     - assets/images/fa.png
      - assets/images/manual.png
      - assets/images/gps2.png
      - assets/images/sun.png

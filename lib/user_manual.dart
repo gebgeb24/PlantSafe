@@ -43,7 +43,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
     {
       'title': 'First Aid Guidance',
       'description': 'The "First Aid" section provides:\n• Specific treatment steps\n• Emergency actions\n• Call emergency option',
-      'image': 'assets/gif/step4.gif',
+      'image': 'assets/images/fa.png',
       'icon': Icons.medical_services,
       'hasBullets': true,
       'color': const Color(0xFFEF5350),
@@ -66,7 +66,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
       DeviceOrientation.portraitDown,
     ]);
 
-    _indicatorTimer = Timer(const Duration(seconds: 8), () {
+    _indicatorTimer = Timer(const Duration(seconds: 15), () {
       if (mounted) {
         setState(() => _showSwipeIndicator = false);
       }
@@ -218,29 +218,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
                       padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
                       child: Column(
                         children: [
-                          // Step indicator
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            height: 5,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemCount: _steps.length,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, i) {
-                                return Container(
-                                  width: (size.width - 80) / _steps.length,
-                                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                                  decoration: BoxDecoration(
-                                    color: i <= _currentPage
-                                        ? Colors.white
-                                        : Colors.white.withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+
 
                           // Main Card
                           Expanded(
@@ -336,6 +314,7 @@ class _UserManualScreenState extends State<UserManualScreen> {
                                       ),
                                     ),
 
+
                                     // Content
                                     Expanded(
                                       child: SingleChildScrollView(
@@ -396,8 +375,34 @@ class _UserManualScreenState extends State<UserManualScreen> {
                         ],
                       ),
                     ),
+
                   );
+
                 },
+
+              ),
+              // Step indicator
+              Container(
+                height: 5,
+                alignment: Alignment.center, // Aligns child to center horizontally
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _steps.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, i) {
+                    return Container(
+                      width: (size.width - 80) / _steps.length,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      decoration: BoxDecoration(
+                        color: i <= _currentPage
+                            ? Colors.white
+                            : Colors.white.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    );
+                  },
+                ),
               ),
 
               // Swipe Indicator

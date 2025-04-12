@@ -183,13 +183,13 @@ class _FirstAidState extends State<FirstAid> {
     speechBuffer.write("Toxicity Index: ${widget.toxicityIndex}. ");
 
     for (var details in matchedToxicityDetails) {
-      speechBuffer.write("Description: ${details['description']}. ");
-      speechBuffer.write("Symptoms: ${details['symptoms']}. ");
-      speechBuffer.write("First Aid Guide: ");
+      speechBuffer.write("${details['description']}... ");
+      speechBuffer.write("Symptoms:... ${details['symptoms']}... ");
+      speechBuffer.write("First Aid Guide:. ");
 
       if (details['firstAidGuide'] != null) {
         for (var i = 0; i < details['firstAidGuide'].length; i++) {
-          speechBuffer.write("Step ${i + 1}: ${details['firstAidGuide'][i]}. ");
+          speechBuffer.write("Step ${i + 1}: ${details['firstAidGuide'][i]}... ");
         }
       }
     }
@@ -458,8 +458,9 @@ class _FirstAidState extends State<FirstAid> {
                   ),
                 ),
 
-
+                const SizedBox(height: 60),
               ],
+
             ),
           ),
         ),

@@ -489,8 +489,8 @@ class _LibraryScreenState extends State<LibraryScreen> with SingleTickerProvider
                                 scrollDirection: Axis.horizontal,
                                 children: [
                                   _buildCategoryChip('All Plants'),
-                                  _buildCategoryChip('Minor Toxicity'),
                                   _buildCategoryChip('Major Toxicity'),
+                                  _buildCategoryChip('Minor Toxicity'),
                                   _buildCategoryChip('Oxalates'),
                                   _buildCategoryChip('Dermatitis'),
                                 ],

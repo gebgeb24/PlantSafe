@@ -182,7 +182,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "scientificName": "Invalid",
       "tagalogName": "Invalid",
       "toxicityIndex": "Invalid",
-      "plantDescription": "This may be due to one or more of the following:\\n- The image is not a plant.\\n- The plant is toxic but not an irritant type.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
+      "plantDescription": "This may be due to one or more of the following:\\n- The image is not a plant.\\n- The photo has low visibility or insufficient light.\\n- The picture is not clear or is improperly taken.",
       "toxicityDescription": "Invalid",
       "genus": "Invalid",
       "species": "Invalid",
@@ -193,7 +193,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
       "scientificName": "Non-Irritant",
       "tagalogName": "Non-Irritant",
       "toxicityIndex": "Non-Irritant",
-      "plantDescription": "The plant does not typically cause skin irritation. However, it may still possess toxic properties if ingested; therefore, consumption is not advised.",
+      "plantDescription": "This plant does not cause skin irritation and is considered safe to touch under normal conditions or handling.",
       "toxicityDescription": "Non-Irritant",
       "genus": "Non-Irritant",
       "species": "Non-Irritant",
@@ -307,7 +307,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     }
 
     if (_result.contains('Non-Irritant')) {
-      _speechText = "The plant is classified as non-irritant. The plant does not typically cause skin irritation. However, it may still possess toxic properties if ingested. therefore, consumption is not advised.";
+      _speechText = "The plant is classified as non-irritant. This plant does not cause skin irritation and is considered safe to touch under normal conditions or handling.";
       return;
     }
 
@@ -325,7 +325,8 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
     String toxicityDescription = resultLines.sublist(9).join(' ').trim();
 
     _speechText = """
-    The plant is identified as $plantName with a probability of $accuracy percent. 
+    The plant is identified as $plantName with a probability of $accuracy percent.
+    This plant is toxic irritant. 
     Its toxicity index is $toxicityIndex. $toxicityDescription. 
     $plantName, scientifically known as $scientificName. 
     In the Philippines, it is referred to as $tagalogName. 
@@ -917,7 +918,7 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             );
                           }).toList(),
                         ),
-                        const SizedBox(height: 12),
+
                       ],
 
 
@@ -929,18 +930,11 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
 
                         decoration: BoxDecoration(
                           color: _result.contains('Invalid')
-                              ? Color(0xFFA6A6A6)
+                              ? const Color(0xFFA6A6A6)
                               : _result.contains("Non-Irritant")
                               ? const Color(0xFFDFF5E2)
                               : Colors.transparent,
                           borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
                           border: Border.all(
                             color: _result.contains("Invalid")
                                 ? Colors.black
@@ -1157,11 +1151,12 @@ class _ScanPlantScreenState extends State<ScanPlantScreen> {
                             ),
                           ),
                         ],
-                      ),
+                      )
+
                     ),
                   ),
                 ],
-
+                const SizedBox(height: 60),
               ],
             ),
           ),
